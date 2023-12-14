@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "908252578672",
+    "project_id": "astros-y-tarot-eef1f",
+    "storage_bucket": "astros-y-tarot-eef1f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908252578672:android:a0fdf9b60370a6a69545b5",
+        "android_client_info": {
+          "package_name": "com.gabrielledcastro.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXuGMSXQmI-ztdQMOXsFNGeO_nh5LlHjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
