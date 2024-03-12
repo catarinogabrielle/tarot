@@ -53,6 +53,20 @@ color: ${ColorTheme.Branco};
 font-size: 15px;
 `;
 
+export const ButtonSign = styled.TouchableOpacity`
+width: 100%;
+margin-top: 15px;
+align-items: center;
+padding: 10px;
+border-radius: 4px;
+border: 1px solid ${ColorTheme.Theme};
+`;
+
+export const TextButtonSign = styled.Text`
+color: ${ColorTheme.Theme};
+font-size: 15px;
+`;
+
 export const Alert = styled.Text`
 color: ${ColorTheme.Vermelho};
 font-size: 12px;

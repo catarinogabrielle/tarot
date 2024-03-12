@@ -114,10 +114,8 @@ line-height: 21px;
 export const ContentLoading = styled.View`
 width: 100%;
 height: 100%;
-position: absolute;
 display: flex;
 background-color: rgba(255 ,255 ,255 , 0.8);
-align-items: center;
 `;
 
 export const TitleInitial = styled.Text`

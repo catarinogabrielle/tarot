@@ -6,21 +6,26 @@ import { FontAwesome, Ionicons, AntDesign } from "@expo/vector-icons";
 import Colors from "../../constants/Colors";
 const ColorTheme = Colors['Theme'];
 
+import { useTranslation } from 'react-i18next';
+
 import Profile from '../pages/Profile';
 import YourGame from "../pages/YourGame";
 import Game from "../pages/Game";
 import SpecificGame from "../pages/SpecificGame";
 import NewGame from '../pages/NewGame';
+import Couple from '../pages/Couple';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function StackScreen() {
+    const { t } = useTranslation()
+
     return (
         <Stack.Navigator>
             <Stack.Screen name="NewGame" component={NewGame} options={{ headerShown: false }} />
             <Stack.Screen name="Game" component={Game} options={{
-                title: 'Conselho diário',
+                title: t('title_header_1'),
                 headerStyle: {
                     backgroundColor: ColorTheme.Theme,
                 },
@@ -31,7 +36,7 @@ function StackScreen() {
                 },
             }} />
             <Stack.Screen name="SpecificGame" component={SpecificGame} options={{
-                title: 'Pergunta específica',
+                title: t('title_header_2'),
                 headerStyle: {
                     backgroundColor: ColorTheme.Theme,
                 },
@@ -82,6 +87,16 @@ export default function AppRoutes() {
             />
 
             <Tab.Screen
+                name="Couple"
+                component={Couple}
+                options={{
+                    tabBarIcon: ({ color, size }) => {
+                        return <AntDesign name="heart" size={size} color={color} />
+                    }
+                }}
+            />
+
+            <Tab.Screen
                 name="Profile"
                 component={Profile}
                 options={{
@@ -91,5 +106,5 @@ export default function AppRoutes() {
                 }}
             />
         </Tab.Navigator>
-    );
+    )
 }

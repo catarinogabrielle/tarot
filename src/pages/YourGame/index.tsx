@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import * as Notifications from 'expo-notifications';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { EvilIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import 'expo-dev-client';
+import { AuthContext } from '../../contexts/AuthContext';
+
+import { useTranslation } from 'react-i18next';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -52,6 +55,7 @@ export default function YourGame({ navigation }) {
     const [games, setGames] = useState([])
     const [loadingBig, setLoadingBig] = useState(true)
     const [dataLen, setDataLen] = useState(true)
+    const { premium } = useContext(AuthContext)
 
     const handleCallNotifications = async () => {
         await Notifications.scheduleNotificationAsync({
@@ -150,6 +154,8 @@ export default function YourGame({ navigation }) {
         }
     }, [isClosed, navigation])
 
+    const { t } = useTranslation()
+
     function handleGameLatters() {
         return (
             <ContainerResponse>
@@ -171,7 +177,7 @@ export default function YourGame({ navigation }) {
                                     <DescriptionLetter>{item?.cartas?.map(i => i?.descricao)}</DescriptionLetter>
 
                                     <ContentTextResponse>
-                                        <TextIn>Lembre-se: mesmo diante das previsões do Tarot, você detém do poder de moldar o seu futuro com suas escolhas e ações.</TextIn>
+                                        <TextIn>{t('remember')}</TextIn>
                                     </ContentTextResponse>
 
                                     <View style={styles.flex}>
@@ -180,17 +186,21 @@ export default function YourGame({ navigation }) {
 
                                     <TextLetter>{item?.resposta}</TextLetter>
 
-                                    {isClosed == false && (
-                                        <Button onPress={() => {
-                                            if (isLoaded) {
-                                                show()
-                                            } else {
-                                                setResponse(false)
-                                                navigation.navigate('YourGame')
-                                            }
-                                        }}>
-                                            <TextButton>GANHE 1 CREDITO GRATUITO E FAÇA UMA PERGUNTA ESPECÍFICA</TextButton>
-                                        </Button>
+                                    {premium != true && (
+                                        <>
+                                            {isClosed == false && (
+                                                <Button onPress={() => {
+                                                    if (isLoaded) {
+                                                        show()
+                                                    } else {
+                                                        setResponse(false)
+                                                        navigation.navigate('YourGame')
+                                                    }
+                                                }}>
+                                                    <TextButton>{t('one_credit')}</TextButton>
+                                                </Button>
+                                            )}
+                                        </>
                                     )}
                                 </ContentResponse>
                             </ScrollView >
@@ -215,7 +225,7 @@ export default function YourGame({ navigation }) {
                         <Content>
                             {games.length !== 0 ? (
                                 <>
-                                    <TitleIn>Seus últimos jogos</TitleIn>
+                                    <TitleIn>{t('title_your_games')}</TitleIn>
 
                                     {games?.map(item => (
                                         <ContentCard key={item?.pergunta_id} onPress={() => {
@@ -225,22 +235,22 @@ export default function YourGame({ navigation }) {
                                             <ImgIn source={require('../../assets/carta.png')} />
                                             <ContentInfo>
                                                 {item.pergunta == 'conselhododia' ? (
-                                                    <TitleCard>Tarot do Dia</TitleCard>
+                                                    <TitleCard>{t('label_title_day')}</TitleCard>
                                                 ) : (
-                                                    <TitleCard>Pergunta Específica</TitleCard>
+                                                    <TitleCard>{t('label_title_specific')}</TitleCard>
                                                 )}
-                                                <TextCard>Feito em <Text style={styles.TextStrong}>{toJSONLocal(item?.data_pergunta)}</Text></TextCard>
-                                                <TextCard>Carta: {item?.cartas?.map(i => i?.nome)}</TextCard>
+                                                <TextCard>{t('data')} <Text style={styles.TextStrong}>{toJSONLocal(item?.data_pergunta)}</Text></TextCard>
+                                                <TextCard>{t('letter')}: {item?.cartas?.map(i => i?.nome)}</TextCard>
                                             </ContentInfo>
                                         </ContentCard>
                                     ))}
                                 </>
                             ) : (
                                 <>
-                                    <TitleIn>Seus últimos jogos!</TitleIn>
+                                    <TitleIn>{t('text_games_old')}</TitleIn>
 
                                     {dataLen == false && (
-                                        <Description>Você ainda não fez nenhum jogo</Description>
+                                        <Description>{t('error')}</Description>
                                     )}
                                 </>
                             )}

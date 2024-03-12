@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Modal, View, Text, Pressable, TouchableOpacity } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getLocales } from 'expo-localization';
 import { EvilIcons } from '@expo/vector-icons';
+
+import { AuthContext } from '../../contexts/AuthContext';
 
 import Colors from "../../../constants/Colors";
 const ColorTheme = Colors['Theme'];
@@ -29,6 +32,7 @@ import {
 } from './styles';
 
 import { RewardedAd, RewardedAdEventType, AdEventType, RewardedAdReward, useInterstitialAd } from 'react-native-google-mobile-ads';
+import { useTranslation } from 'react-i18next';
 
 const adUnitIdInterstitial = '/92206805/app-astrosytarot/interstitial';
 const adUnitId = '/92206805/app-astrosytarot/rewards';
@@ -43,15 +47,20 @@ export default function NewGame({ navigation }) {
     const [modalVisible, setModalVisible] = useState(false)
     const [games, setGames] = useState([])
     const [response, setResponse] = useState(false)
+    const { premium } = useContext(AuthContext)
 
     const handleStorage = async () => {
-        const storageInfo = await AsyncStorage.getItem('@deviceStorage')
-        let hasDeviceStorage = JSON.parse(storageInfo || '{}')
-
-        if (storageInfo == null || hasDeviceStorage < 5) {
-            setModalVisible(true)
-        } else {
+        if (premium == true) {
             navigation.navigate('SpecificGame')
+        } else {
+            const storageInfo = await AsyncStorage.getItem('@deviceStorage')
+            let hasDeviceStorage = JSON.parse(storageInfo || '{}')
+
+            if (storageInfo == null || hasDeviceStorage < 5) {
+                setModalVisible(true)
+            } else {
+                navigation.navigate('SpecificGame')
+            }
         }
     }
 
@@ -168,7 +177,37 @@ export default function NewGame({ navigation }) {
 
     useEffect(() => {
         deleteCache()
-    })
+    }, [])
+
+    const deviceLanguage = getLocales()[0].languageCode
+
+    const { t, i18n } = useTranslation()
+
+    const changeLanguage = async () => {
+        const language = await AsyncStorage.getItem('@Language')
+        let hasLanguageStorage = JSON.parse(language || '{}')
+        console.log(hasLanguageStorage)
+
+        if (language !== null) {
+            i18n.changeLanguage(hasLanguageStorage)
+        } else {
+            if (deviceLanguage == 'pt') {
+                i18n.changeLanguage("pt_BR")
+                await AsyncStorage.setItem('@Language', JSON.stringify("pt_BR"))
+            }
+            else if (deviceLanguage == 'en') {
+                i18n.changeLanguage("en_US")
+                await AsyncStorage.setItem('@Language', JSON.stringify("en_US"))
+            } else {
+                i18n.changeLanguage("es_ES")
+                await AsyncStorage.setItem('@Language', JSON.stringify("es_ES"))
+            }
+        }
+    }
+
+    useEffect(() => {
+        changeLanguage()
+    }, [])
 
     function handleGameLatters() {
         return (
@@ -184,7 +223,7 @@ export default function NewGame({ navigation }) {
                         <DescriptionLetter>{games.descricao}</DescriptionLetter>
 
                         <ContentTextResponse>
-                            <TextIn>Lembre-se: mesmo diante das previsões do Tarot, você detém do poder de moldar o seu futuro com suas escolhas e ações.</TextIn>
+                            <TextIn>{t('remember')}</TextIn>
                         </ContentTextResponse>
 
                         <View style={styles.flex}>
@@ -193,17 +232,21 @@ export default function NewGame({ navigation }) {
 
                         <TextLetter>{games.gpt_response}</TextLetter>
 
-                        {isClosed == false && (
-                            <Button onPress={() => {
-                                if (isLoaded) {
-                                    show()
-                                } else {
-                                    setResponse(false)
-                                    navigation.navigate('NewGame')
-                                }
-                            }}>
-                                <TextButton>GANHE 1 CREDITO GRATUITO E FAÇA UMA PERGUNTA ESPECÍFICA</TextButton>
-                            </Button>
+                        {premium != true && (
+                            <>
+                                {isClosed == false && (
+                                    <Button onPress={() => {
+                                        if (isLoaded) {
+                                            show()
+                                        } else {
+                                            setResponse(false)
+                                            navigation.navigate('NewGame')
+                                        }
+                                    }}>
+                                        <TextButton>{t('one_credit')}</TextButton>
+                                    </Button>
+                                )}
+                            </>
                         )}
                     </ContentResponse>
                 </ScrollView >
@@ -220,23 +263,29 @@ export default function NewGame({ navigation }) {
 
                         <ScrollView style={styles.scroll}>
                             <Content>
-                                <Title>Escolha o tipo de jogo</Title>
+                                <Title>{t('title')}</Title>
 
                                 <Card onPress={handleDataFormat}>
                                     <Letter1 source={require('../../assets/carta.png')} />
-                                    <Label>Conselho diário gratuito</Label>
+                                    <Label>{t('advice')}</Label>
                                 </Card>
 
                                 <Card onPress={handleStorage}>
                                     <Letter2 source={require('../../assets/cartas.png')} />
-                                    <Label>Uma pergunta específica</Label>
-                                    <Label style={{ marginTop: 3 }}> 5 pontos por pergunta</Label>
+                                    <Label>{t('question')}</Label>
+                                    {premium != true && (
+                                        <Label style={{ marginTop: 3 }}>{t('question_label')}</Label>
+                                    )}
                                 </Card>
 
-                                {(time == true && rewardloaded == true) && (
-                                    <Card onPress={() => { rewarded.show() }} style={{ backgroundColor: ColorTheme.Verde2 }}>
-                                        <Label>Ganhe pontos gratuitos assistindo anúncios</Label>
-                                    </Card>
+                                {premium != true && (
+                                    <>
+                                        {(time == true && rewardloaded == true) && (
+                                            <Card onPress={() => { rewarded.show() }} style={{ backgroundColor: ColorTheme.Verde2 }}>
+                                                <Label>{t('new_points')}</Label>
+                                            </Card>
+                                        )}
+                                    </>
                                 )}
                             </Content>
                         </ScrollView>
@@ -256,12 +305,19 @@ export default function NewGame({ navigation }) {
             >
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
-                        <Text style={styles.modalText}>Você não tem créditos suficientes para fazer uma pergunta específica!</Text>
-                        <Pressable
-                            style={styles.button}
-                            onPress={() => setModalVisible(!modalVisible)}>
-                            <Text style={styles.textStyle}>voltar</Text>
-                        </Pressable>
+                        <Text style={styles.modalText}>{t('modal_credits')}</Text>
+                        <View style={styles.btnContent}>
+                            <Pressable
+                                style={styles.button}
+                                onPress={() => setModalVisible(!modalVisible)}>
+                                <Text style={styles.textStyle}>{t('btn_back')}</Text>
+                            </Pressable>
+                            <Pressable
+                                style={styles.buttonPremium}
+                                onPress={() => { }}>
+                                <Text style={styles.textStyle}>Sejá Premium</Text>
+                            </Pressable>
+                        </View>
                     </View>
                 </View>
             </Modal>
@@ -295,13 +351,27 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
     },
+    btnContent: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
     button: {
         borderRadius: 4,
         padding: 10,
-        width: 100,
         elevation: 2,
         backgroundColor: ColorTheme.Laranja,
         marginTop: 30,
+        marginRight: 5,
+        marginLeft: 5,
+    },
+    buttonPremium: {
+        borderRadius: 4,
+        padding: 10,
+        elevation: 2,
+        backgroundColor: ColorTheme.Theme,
+        marginTop: 30,
+        marginRight: 5,
+        marginLeft: 5,
     },
     modalText: {
         textAlign: 'center',

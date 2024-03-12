@@ -3,9 +3,12 @@ import { StatusBar, PermissionsAndroid } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { NavigationContainer } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
+import { StripeProvider } from '@stripe/stripe-react-native';
 
 import Routes from "./src/routes";
 import Available from "./src/pages/Available";
+
+import { AuthProvider } from './src/contexts/AuthContext';
 
 import Colors from "./constants/Colors";
 const ColorTheme = Colors['Theme'];
@@ -78,15 +81,17 @@ export default function App() {
   }, [])
 
   return (
-    <NavigationContainer>
-      <StatusBar backgroundColor={ColorTheme.Theme} barStyle="light-content" translucent={false} />
-      {available == true ? (
-        <>
-          <Routes />
-        </>
-      ) : (
-        <Available />
-      )}
-    </NavigationContainer>
+      <NavigationContainer>
+        <AuthProvider>
+          <StatusBar backgroundColor={ColorTheme.Theme} barStyle="light-content" translucent={false} />
+          {available == true ? (
+            <>
+              <Routes />
+            </>
+          ) : (
+            <Available />
+          )}
+        </AuthProvider>
+      </NavigationContainer>
   )
 }

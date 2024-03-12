@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { Alert, ScrollView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import Colors from '../../../constants/Colors';
 const ColorTheme = Colors['Theme'];
 
+import { useTranslation } from 'react-i18next';
+
 import {
     Container,
+    ContentBack,
+    TextBack,
     Logo,
-    Title,
     ContentInput,
     Input,
     Button,
@@ -16,20 +21,51 @@ import {
     Text,
 } from './styles';
 
+import { AuthContext } from '../../contexts/AuthContext';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function SignIn() {
-    const [name, setName] = useState('')
+    const { signIn, handleLogin } = useContext(AuthContext)
+
     const [email, setEmai] = useState('')
     const [password, setPassword] = useState('')
-    const [confirm, setConfirm] = useState('')
-    const [login, setLogin] = useState(true)
 
-    function toggleLogin() {
-        setLogin(!login)
+    const { t } = useTranslation()
+
+    async function login() {
+        if (email === '' || password === '') {
+            Alert.alert(t('alert_title'), t('alert_signIn'), [
+                { text: 'OK', onPress: () => console.log('OK Pressed') },
+            ]);
+            return;
+        }
+
+        await signIn({ email, password })
     }
 
-    if (login) {
-        return (
+    async function toogleNewGame() {
+        const value = true
+        await handleLogin({ value })
+        await AsyncStorage.setItem('@deviceFirst', JSON.stringify("true"))
+        await AsyncStorage.removeItem("@deviceStorage")
+        await AsyncStorage.removeItem("@deviceStorageDataResponse")
+        await AsyncStorage.removeItem("@deviceStorageDate")
+        await AsyncStorage.removeItem("@deviceStorageInfo")
+        await AsyncStorage.removeItem("@IMEI")
+    }
+
+    async function toogleBack() {
+        const value = true
+        await handleLogin({ value })
+    }
+
+    return (
+        <ScrollView>
             <Container>
+                <ContentBack>
+                    <Ionicons onPress={() => toogleBack()} name="arrow-back-sharp" size={25} color={ColorTheme.Theme} />
+                    <TextBack onPress={() => toogleBack()}>{t('btn_back')}</TextBack>
+                </ContentBack>
                 <Logo source={require('../../assets/logo.png')} />
 
                 <ContentInput>
@@ -37,71 +73,25 @@ export default function SignIn() {
                         value={email}
                         onChangeText={(text: React.SetStateAction<string>) => setEmai(text)}
                         placeholderTextColor={ColorTheme.Cinza_escuro}
-                        placeholder="Digite seu Email"
+                        placeholder={t('email')}
                     />
 
                     <Input
                         value={password}
                         onChangeText={(text: React.SetStateAction<string>) => setPassword(text)}
                         placeholderTextColor={ColorTheme.Cinza_escuro}
-                        placeholder="Digite sua Senha"
+                        placeholder={t('password_signin')}
                     />
 
-                    <Button>
-                        <TextButton>Acessar</TextButton>
+                    <Button onPress={login}>
+                        <TextButton>{t('access')}</TextButton>
                     </Button>
 
-                    <BtnSign onPress={toggleLogin}>
-                        <Sign>Novo aqui? Clique em <Text>Cadastrar</Text></Sign>
+                    <BtnSign onPress={() => toogleNewGame()}>
+                        <Sign>{t('label_signIn_1')} <Text>{t('label_signIn_2')}</Text></Sign>
                     </BtnSign>
                 </ContentInput>
             </Container>
-        )
-    }
-
-    return (
-        <Container>
-            <Logo source={require('../../assets/logo.png')} />
-
-            <Title>Tela de Cadastro</Title>
-
-            <ContentInput>
-                <Input
-                    value={name}
-                    onChangeText={(text: React.SetStateAction<string>) => setName(text)}
-                    placeholderTextColor={ColorTheme.Cinza_escuro}
-                    placeholder="Digite seu Nome"
-                />
-
-                <Input
-                    value={email}
-                    onChangeText={(text: React.SetStateAction<string>) => setEmai(text)}
-                    placeholderTextColor={ColorTheme.Cinza_escuro}
-                    placeholder="Digite seu Email aqui"
-                />
-
-                <Input
-                    value={password}
-                    onChangeText={(text: React.SetStateAction<string>) => setPassword(text)}
-                    placeholderTextColor={ColorTheme.Cinza_escuro}
-                    placeholder="Digite sua Senha"
-                />
-
-                <Input
-                    value={confirm}
-                    onChangeText={(text: React.SetStateAction<string>) => setConfirm(text)}
-                    placeholderTextColor={ColorTheme.Cinza_escuro}
-                    placeholder="Confirmar Senha"
-                />
-
-                <Button>
-                    <TextButton>Cadastrar</TextButton>
-                </Button>
-
-                <BtnSign onPress={toggleLogin}>
-                    <Sign>Voltar para tela de <Text>Login</Text></Sign>
-                </BtnSign>
-            </ContentInput>
-        </Container>
+        </ScrollView>
     )
 }

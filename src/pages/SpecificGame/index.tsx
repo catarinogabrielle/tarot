@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { EvilIcons } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
 import DeviceInfo from 'react-native-device-info';
+import { AuthContext } from '../../contexts/AuthContext';
 import 'expo-dev-client';
+
+import { useTranslation } from 'react-i18next';
 
 import Colors from "../../../constants/Colors";
 const ColorTheme = Colors['Theme'];
@@ -56,6 +59,7 @@ export default function SpecificGame({ navigation }) {
     const [question, setQuestion] = useState('')
     const [questionResult, setQuestionResult] = useState([])
     const [saveQuestion, setSaveQuestion] = useState(false)
+    const { premium } = useContext(AuthContext)
 
     async function diveceItemStorage() {
         const storageInfo = await AsyncStorage.getItem('@deviceStorage')
@@ -64,9 +68,11 @@ export default function SpecificGame({ navigation }) {
         await AsyncStorage.setItem('@deviceStorage', JSON.stringify(hasDeviceStorage - 5))
     }
 
+    const { t, i18n } = useTranslation()
+
     async function handleCards() {
         try {
-            await Api.get('/api/index.php?request=cards').then(response => {
+            await Api.get(`/api/index.php?request=cards&lang=${i18n.language}`).then(response => {
                 setCards(response.data)
                 setStartGame(true)
                 setLoading(false)
@@ -104,7 +110,7 @@ export default function SpecificGame({ navigation }) {
         const id = USER_ID.data.usuario_id
 
         try {
-            await Api.post('/api/index.php?request=questions', {
+            await Api.post(`/api/index.php?request=questions&lang=${i18n.language}`, {
                 question_text: question,
                 user_id: id,
                 card_ids: [item]
@@ -216,8 +222,8 @@ export default function SpecificGame({ navigation }) {
             <ContainerResponse>
                 {idCard == '' ? (
                     <>
-                        <TitleInitial>ESCOLHA UMA CARTA</TitleInitial>
-                        <TitleLabel>Deslize as cartas, e selecione uma delas!</TitleLabel>
+                        <TitleInitial>{t('choice')}</TitleInitial>
+                        <TitleLabel>{t('label_choice')}</TitleLabel>
 
                         <ScrollView style={styles.scroll}>
                             <ContentLaters>
@@ -237,7 +243,7 @@ export default function SpecificGame({ navigation }) {
                         {questionResult.length == 0 ? (
                             <ContentLoading>
                                 <ScrollView style={styles.scroll}>
-                                    <View style={{ width: '100%', alignItems: 'center', marginLeft: 20, marginTop: 30 }}>
+                                    <View style={{ width: '100%', alignItems: 'center', marginTop: 30 }}>
                                         <LottieView
                                             autoPlay
                                             loop
@@ -250,14 +256,12 @@ export default function SpecificGame({ navigation }) {
                                     </View>
 
                                     <DescriptionLetter style={{
-                                        textAlign: 'center',
-                                        marginLeft: 20
-                                    }}>"Acendendo a chama da sabedoria tecnológica..."</DescriptionLetter>
+                                        textAlign: 'center'
+                                    }}>"{t('text_loading')}"</DescriptionLetter>
 
                                     <DescriptionLetter style={{
-                                        textAlign: 'center',
-                                        marginLeft: 20
-                                    }}>Consultando o oráculo</DescriptionLetter>
+                                        textAlign: 'center'
+                                    }}>{t('label_loading')}</DescriptionLetter>
 
                                     <View style={styles.flexBanner}>
                                         <GAMBannerAd
@@ -286,7 +290,7 @@ export default function SpecificGame({ navigation }) {
                                                     <DescriptionLetter>{item.descricao}</DescriptionLetter>
 
                                                     <ContentTextResponse>
-                                                        <Text>Lembre-se: mesmo diante das previsões do Tarot, você detém do poder de moldar o seu futuro com suas escolhas e ações.</Text>
+                                                        <Text>{t('remember')}</Text>
                                                     </ContentTextResponse>
 
                                                     <View style={styles.flex}>
@@ -295,15 +299,17 @@ export default function SpecificGame({ navigation }) {
 
                                                     <TextLetter>{questionResult.gpt_response}</TextLetter>
 
-                                                    <Button onPress={() => {
-                                                        if (isLoaded) {
-                                                            show()
-                                                        } else {
-                                                            navigation.navigate('NewGame')
-                                                        }
-                                                    }}>
-                                                        <TextButton>GANHE 1 CREDITO GRATUITO</TextButton>
-                                                    </Button>
+                                                    {premium != true && (
+                                                        <Button onPress={() => {
+                                                            if (isLoaded) {
+                                                                show()
+                                                            } else {
+                                                                navigation.navigate('NewGame')
+                                                            }
+                                                        }}>
+                                                            <TextButton>{t('one_credit')}</TextButton>
+                                                        </Button>
+                                                    )}
                                                 </ContentResponse>
                                             </ScrollView >
                                         )
@@ -323,20 +329,20 @@ export default function SpecificGame({ navigation }) {
                     <Content>
                         {saveName == false ? (
                             <>
-                                <Title>1 - Como gostaria de ser chamado?</Title>
+                                <Title>1 - {t('your_name')}</Title>
                                 <ContentInput>
                                     {alert && (
-                                        <Alert>Preencha o campo abaixo*</Alert>
+                                        <Alert>{t('fields')}*</Alert>
                                     )}
                                     <Input
                                         value={name}
                                         onChangeText={(text: React.SetStateAction<string>) => setName(text)}
                                         placeholderTextColor={ColorTheme.Cinza_escuro}
-                                        placeholder="Digite seu Nome"
+                                        placeholder={t('name')}
                                     />
 
                                     <Button onPress={handleSaveName}>
-                                        <TextButton>Salvar</TextButton>
+                                        <TextButton>{t('save')}</TextButton>
                                     </Button>
                                 </ContentInput>
                             </>
@@ -346,41 +352,40 @@ export default function SpecificGame({ navigation }) {
 
                                 {saveQuestion == false ? (
                                     <>
-                                        <Title>2 - Faça uma pergunta ao oráculo</Title>
+                                        <Title>2 - {t('specific_question')}</Title>
 
                                         <ContentInput>
                                             {alert && (
-                                                <Alert>Escreva uma pergunta abaixo*</Alert>
+                                                <Alert>{t('alert_write')}*</Alert>
                                             )}
                                             <Input
                                                 value={question}
                                                 onChangeText={(text: React.SetStateAction<string>) => setQuestion(text)}
                                                 placeholderTextColor={ColorTheme.Cinza_escuro}
-                                                placeholder="Digite sua pergunta"
+                                                placeholder={t('type_your_question')}
                                             />
 
                                             <Button onPress={handleSaveQuestion}>
-                                                <TextButton>Perguntar</TextButton>
+                                                <TextButton>{t('btn_question')}</TextButton>
                                             </Button>
                                         </ContentInput>
                                     </>
                                 ) : (
                                     <>
-                                        <Title>Essa foi sua pergunta:</Title>
+                                        <Title>{t('label_question')}</Title>
                                         <Question>{question}</Question>
 
-                                        <Title>3 - CONCENTRE-SE PROFUNDAMENTE NA SUA PERGUNTA.</Title>
+                                        <Title>3 - {t('third_question')}</Title>
 
                                         <ContentText>
-                                            <Text>Concentre-se e peça mentalmente uma orientação para a sua pergunta.
-                                                Você só pode tirar uma carta, por isso, quando se sentir preparado embaralhe as cartas.</Text>
+                                            <Text>{t('label_third_question')}</Text>
                                         </ContentText>
 
                                         <Button onPress={() => {
                                             setLoading(true)
                                             handleCards()
                                         }}>
-                                            <TextButton>EMBARALHAR CARTAS</TextButton>
+                                            <TextButton>{t('btn_shuffle')}</TextButton>
                                         </Button>
 
                                         <ContentImage>
@@ -427,7 +432,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%',
         marginTop: 25,
-        marginLeft: 20,
-        position: 'relative',
     }
 })

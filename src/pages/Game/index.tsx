@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, View, PermissionsAndroid } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LottieView from 'lottie-react-native';
 import { EvilIcons } from "@expo/vector-icons";
 import DeviceInfo from 'react-native-device-info';
 import 'expo-dev-client';
+import { AuthContext } from '../../contexts/AuthContext';
+
+import { useTranslation } from 'react-i18next';
 
 import { useInterstitialAd, GAMBannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 
@@ -19,29 +22,29 @@ import { Api } from "../../services/api";
 import {
     Container,
     Content,
-    ContainerResponse,
     Title,
     ContentInput,
     Alert,
     Input,
     Button,
     TextButton,
-    ContentImage,
-    Img,
     Name,
     ContentText,
     ContentTextResponse,
     Text,
+    ContentImage,
+    Img,
     ContentLoading,
+    ContainerResponse,
     TitleInitial,
     TitleLabel,
     ContentLaters,
     Letter,
+    DescriptionLetter,
     ContentResponse,
     NameLetter,
-    TextLetter,
-    DescriptionLetter,
     LetterResponse,
+    TextLetter,
 } from './styles';
 
 PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
@@ -60,6 +63,7 @@ export default function Game({ navigation }) {
     const [descricao, setDescricao] = useState('')
     const [imagem_url, setImagem_url] = useState('')
     const [gpt_response, setGpt_response] = useState('')
+    const { premium } = useContext(AuthContext)
 
     const handleDataResponse = (item) => {
         setNome(item.nome)
@@ -113,9 +117,11 @@ export default function Game({ navigation }) {
         }
     }, [isClosed, navigation])
 
+    const { t, i18n } = useTranslation()
+
     async function handleCards() {
         try {
-            await Api.get('/api/index.php?request=cards').then(response => {
+            await Api.get(`/api/index.php?request=cards&lang=${i18n.language}`).then(response => {
                 setCards(response.data)
                 setStartGame(true)
                 setLoading(false)
@@ -153,7 +159,7 @@ export default function Game({ navigation }) {
         const id = USER_ID.data.usuario_id
 
         try {
-            await Api.post('/api/index.php?request=questions', {
+            await Api.post(`/api/index.php?request=questions&lang=${i18n.language}`, {
                 question_text: "conselhododia",
                 user_id: id,
                 card_ids: [item]
@@ -243,8 +249,8 @@ export default function Game({ navigation }) {
             <ContainerResponse>
                 {idCard == '' ? (
                     <>
-                        <TitleInitial>ESCOLHA UMA CARTA</TitleInitial>
-                        <TitleLabel>Deslize as cartas, e selecione uma delas!</TitleLabel>
+                        <TitleInitial>{t('choice')}</TitleInitial>
+                        <TitleLabel>{t('label_choice')}</TitleLabel>
 
                         <ScrollView style={styles.scroll}>
                             <ContentLaters>
@@ -266,7 +272,7 @@ export default function Game({ navigation }) {
                         {question.length == 0 ? (
                             <ContentLoading>
                                 <ScrollView style={styles.scroll}>
-                                    <View style={{ width: '100%', alignItems: 'center', marginLeft: 20, marginTop: 30 }}>
+                                    <View style={{ width: '100%', alignItems: 'center', marginTop: 30 }}>
                                         <LottieView
                                             autoPlay
                                             loop
@@ -279,14 +285,12 @@ export default function Game({ navigation }) {
                                     </View>
 
                                     <DescriptionLetter style={{
-                                        textAlign: 'center',
-                                        marginLeft: 20
-                                    }}>"Acendendo a chama da sabedoria tecnológica..."</DescriptionLetter>
+                                        textAlign: 'center'
+                                    }}>"{t('text_loading')}"</DescriptionLetter>
 
                                     <DescriptionLetter style={{
-                                        textAlign: 'center',
-                                        marginLeft: 20
-                                    }}>Consultando o oráculo</DescriptionLetter>
+                                        textAlign: 'center'
+                                    }}>{t('label_loading')}</DescriptionLetter>
 
                                     <View style={styles.flexBanner}>
                                         <GAMBannerAd
@@ -315,7 +319,7 @@ export default function Game({ navigation }) {
                                                     <DescriptionLetter>{item.descricao}</DescriptionLetter>
 
                                                     <ContentTextResponse>
-                                                        <Text>Lembre-se: mesmo diante das previsões do Tarot, você detém do poder de moldar o seu futuro com suas escolhas e ações.</Text>
+                                                        <Text>{t('remember')}</Text>
                                                     </ContentTextResponse>
 
                                                     <View style={styles.flex}>
@@ -324,15 +328,17 @@ export default function Game({ navigation }) {
 
                                                     <TextLetter>{question.gpt_response}</TextLetter>
 
-                                                    <Button onPress={() => {
-                                                        if (isLoaded) {
-                                                            show()
-                                                        } else {
-                                                            navigation.navigate('NewGame')
-                                                        }
-                                                    }}>
-                                                        <TextButton>GANHE 1 CREDITO GRATUITO E FAÇA UMA PERGUNTA ESPECÍFICA</TextButton>
-                                                    </Button>
+                                                    {premium != true && (
+                                                        <Button onPress={() => {
+                                                            if (isLoaded) {
+                                                                show()
+                                                            } else {
+                                                                navigation.navigate('NewGame')
+                                                            }
+                                                        }}>
+                                                            <TextButton>{t('one_credit')}</TextButton>
+                                                        </Button>
+                                                    )}
                                                 </ContentResponse>
                                             </ScrollView >
                                         )
@@ -352,20 +358,20 @@ export default function Game({ navigation }) {
                     <Content>
                         {saveName == false ? (
                             <>
-                                <Title>1 - Como gostaria de ser chamado?</Title>
+                                <Title>1 - {t('your_name')}</Title>
                                 <ContentInput>
                                     {alert && (
-                                        <Alert>Preencha o campo abaixo*</Alert>
+                                        <Alert>{t('fields')}*</Alert>
                                     )}
                                     <Input
                                         value={name}
                                         onChangeText={(text: React.SetStateAction<string>) => setName(text)}
                                         placeholderTextColor={ColorTheme.Cinza_escuro}
-                                        placeholder="Digite seu Nome"
+                                        placeholder={t('name')}
                                     />
 
                                     <Button onPress={handleSaveName}>
-                                        <TextButton>Salvar</TextButton>
+                                        <TextButton>{t('save')}</TextButton>
                                     </Button>
                                 </ContentInput>
                             </>
@@ -373,18 +379,17 @@ export default function Game({ navigation }) {
                             <>
                                 <Name>{name}</Name>
 
-                                <Title>2 - CONCENTRE-SE PROFUNDAMENTE NO SEU DIA.</Title>
+                                <Title>2 - {t('second_question')}</Title>
 
                                 <ContentText>
-                                    <Text>Concentre-se e peça mentalmente uma orientação para o seu dia.
-                                        Você só pode tirar uma carta, por isso, quando se sentir preparado embaralhe as cartas.</Text>
+                                    <Text>{t('label_second_question')}</Text>
                                 </ContentText>
 
                                 <Button onPress={() => {
                                     setLoading(true)
                                     handleCards()
                                 }}>
-                                    <TextButton>EMBARALHAR CARTAS</TextButton>
+                                    <TextButton>{t('btn_shuffle')}</TextButton>
                                 </Button>
 
                                 <ContentImage>
@@ -428,7 +433,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%',
         marginTop: 25,
-        marginLeft: 20,
-        position: 'relative',
     }
 })

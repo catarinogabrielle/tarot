@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Modal, View, Text, Pressable, ScrollView } from 'react-native'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import 'expo-dev-client';
 
+import { useTranslation } from 'react-i18next';
+
 import { Api } from "../../services/api"
 import Header from '../../components/Header';
+
+import { AuthContext } from '../../contexts/AuthContext';
 
 import Colors from '../../../constants/Colors';
 const ColorTheme = Colors['Theme'];
@@ -17,11 +21,15 @@ import {
     Input,
     Button,
     TextButton,
+    ButtonSign,
+    TextButtonSign,
     Alert,
     ContentLoading,
 } from './styles';
 
 export default function Profile() {
+    const { handleLogin } = useContext(AuthContext)
+
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [user, setUser] = useState('')
@@ -102,54 +110,65 @@ export default function Profile() {
         getDeviceItemData()
     }, [])
 
+    const { t } = useTranslation()
+
+    async function toogleLogin() {
+        const value = false
+        await handleLogin({ value })
+    }
+
     return (
         <>
             <Container>
                 <Header />
 
                 <Content>
-                    <Title>Seu Perfil</Title>
+                    <Title>{t('title_profile')}</Title>
 
                     <ScrollView>
                         <ContentInput>
                             {alert && (
-                                <Alert>Preencha o campo de nome*</Alert>
+                                <Alert>{t('alert')}*</Alert>
                             )}
                             <Input
                                 value={name}
                                 onChangeText={(text: React.SetStateAction<string>) => setName(text)}
                                 placeholderTextColor={ColorTheme.Cinza_escuro}
-                                placeholder="Digite seu Nome"
+                                placeholder={t('name')}
                             />
 
                             <Input
                                 value={email}
                                 onChangeText={(text: React.SetStateAction<string>) => setEmail(text)}
                                 placeholderTextColor={ColorTheme.Cinza_escuro}
-                                placeholder="Digite seu E-mail"
+                                placeholder={t('email')}
                             />
 
                             <Input
                                 value={user}
                                 onChangeText={(text: React.SetStateAction<string>) => setUser(text)}
                                 placeholderTextColor={ColorTheme.Cinza_escuro}
-                                placeholder="Digite seu Usuário"
+                                placeholder={t('user')}
                             />
 
                             <Input
                                 value={password}
                                 onChangeText={(text: React.SetStateAction<string>) => setPassword(text)}
                                 placeholderTextColor={ColorTheme.Cinza_escuro}
-                                placeholder="Criar ou alterar senha"
+                                placeholder={t('password')}
                             />
 
                             <Button onPress={handleUser}>
                                 {loading ? (
-                                    <TextButton>Salvar ou Atualizar</TextButton>
+                                    <TextButton>{t('btn_save')}</TextButton>
                                 ) : (
                                     <ActivityIndicator size="small" color={ColorTheme.Branco} />
                                 )}
                             </Button>
+
+                            <ButtonSign onPress={() => toogleLogin()}>
+                                <TextButtonSign>Login</TextButtonSign>
+                            </ButtonSign>
                         </ContentInput>
                     </ScrollView>
                 </Content>
@@ -173,7 +192,7 @@ export default function Profile() {
                         <Pressable
                             style={styles.button}
                             onPress={() => setModalVisible(!modalVisible)}>
-                            <Text style={styles.textStyle}>voltar</Text>
+                            <Text style={styles.textStyle}>{t('btn_back')}</Text>
                         </Pressable>
                     </View>
                 </View>
