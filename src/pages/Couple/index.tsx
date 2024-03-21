@@ -1,8 +1,8 @@
 import React, { useState, useContext } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { EvilIcons, AntDesign } from "@expo/vector-icons";
-import LottieView from "lottie-react-native";;
+import LottieView from "lottie-react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import 'expo-dev-client';
 
 import { useTranslation } from 'react-i18next';
@@ -37,7 +37,13 @@ import {
     ContentBePremium,
     TitleBePremium,
     ButtonBePremium,
-    TextBtnBePremium
+    TextBtnBePremium,
+    DescriptionLetter,
+    ContentResponse,
+    NameLetter,
+    ContentTextResponse,
+    LetterResponse,
+    TextLetter
 } from './styles';
 
 export default function Couple({ navigation }) {
@@ -49,7 +55,10 @@ export default function Couple({ navigation }) {
     const [startGame, setStartGame] = useState(false)
     const [cards, setCards] = useState([])
     const [loading, setLoading] = useState(false)
-    const [idCard, setIdCard] = useState('')
+    const [idCard1, setIdCard1] = useState(0)
+    const [loadingResponse, setLoadingResponse] = useState(false)
+    const [gpt_response, setGpt_response] = useState('')
+    const [question, setQuestion] = useState([])
 
     const { t, i18n } = useTranslation()
 
@@ -70,25 +79,152 @@ export default function Couple({ navigation }) {
         }
     }
 
+    async function getUserData(item) {
+        const storageIMEI = await AsyncStorage.getItem('@IMEI')
+        let handleStorageIMEI = JSON.parse(storageIMEI || '{}')
+
+        try {
+            await Api.post('/api/index.php?request=users&action=return', {
+                IMEI: handleStorageIMEI
+            }).then(response => {
+                const USER_ID = response.data
+                handleQuestion(USER_ID, item)
+            }).catch((err) => {
+                console.log('erro', err)
+            })
+        } catch (err) {
+            console.log('erro', err)
+        }
+    }
+
+    async function handleQuestion(USER_ID, item) {
+        const id = USER_ID.data.usuario_id
+
+        try {
+            await Api.post(`/api/index.php?request=couple_questions&lang=${i18n.language}`, {
+                question_text: "conselhododia",
+                user_id: id,
+                user_name: name1,
+                partner_name: name2,
+                card_ids: [idCard1, item]
+            }).then(response => {
+                setQuestion(response.data)
+                setGpt_response(response.data.gpt_response)
+            }).catch((err) => {
+                console.log('erro', err)
+            })
+        } catch (err) {
+            console.log('error', err)
+        }
+    }
+
+    const [nomeCard1, setNomeCard1] = useState('')
+    const [tipoCard1, setTipoCard1] = useState('')
+    const [descricaoCard1, setDescricaoCard1] = useState('')
+    const [imagem_urlCard1, setImagem_urlCard1] = useState('')
+
+    const [nomeCard2, setNomeCard2] = useState('')
+    const [tipoCard2, setTipoCard2] = useState('')
+    const [descricaoCard2, setDescricaoCard2] = useState('')
+    const [imagem_urlCard2, setImagem_urlCard2] = useState('')
+
     function handleGameLatters() {
         return (
             <ContainerResponse>
-                <TitleInitial>{t('choice')}</TitleInitial>
-                <TitleLabel>{t('label_choice')}</TitleLabel>
+                {loadingResponse != true ? (
+                    <>
+                        {idCard1 === 0 && (
+                            <TitleInitial>Escolha a primeira carta</TitleInitial>
+                        )}
+                        {idCard1 != 0 && (
+                            <TitleInitial>Escolha a segunda carta</TitleInitial>
+                        )}
 
-                <ScrollView style={styles.scroll}>
-                    <ContentLaters>
-                        {cards.map(item => (
-                            <TouchableOpacity onPress={() => {
-                                setIdCard(item.carta_id)
-                            }}
-                                key={item.carta_id}
-                            >
-                                <Letter source={require('../../assets/carta.png')} />
-                            </TouchableOpacity>
-                        ))}
-                    </ContentLaters>
-                </ScrollView >
+                        <TitleLabel>{t('label_choice')}</TitleLabel>
+                        <ScrollView style={styles.scroll}>
+                            <ContentLaters>
+                                {cards.map(item => (
+                                    <TouchableOpacity onPress={() => {
+                                        if (idCard1 === 0) {
+                                            setIdCard1(item.carta_id)
+
+                                            setNomeCard1(item.nome)
+                                            setTipoCard1(item.tipo)
+                                            setDescricaoCard1(item.descricao)
+                                            setImagem_urlCard1(item.imagem_url)
+                                        } else {
+                                            setLoadingResponse(true)
+                                            getUserData(item.carta_id)
+
+                                            setNomeCard2(item.nome)
+                                            setTipoCard2(item.tipo)
+                                            setDescricaoCard2(item.descricao)
+                                            setImagem_urlCard2(item.imagem_url)
+                                        }
+                                    }}
+                                        key={item.carta_id}
+                                    >
+                                        <Letter source={require('../../assets/carta.png')} />
+                                    </TouchableOpacity>
+                                ))}
+                            </ContentLaters>
+                        </ScrollView>
+                    </>
+                ) : (
+                    <>
+                        {gpt_response == '' ? (
+                            <ScrollView style={styles.scroll}>
+                                <View style={{ width: '100%', alignItems: 'center', marginTop: 30 }}>
+                                    <LottieView
+                                        autoPlay
+                                        loop
+                                        style={{
+                                            width: 200,
+                                            height: 130,
+                                        }}
+                                        source={require('../../assets/animation.json')}
+                                    />
+                                </View>
+
+                                <DescriptionLetter style={{
+                                    textAlign: 'center'
+                                }}>"{t('text_loading')}"</DescriptionLetter>
+
+                                <DescriptionLetter style={{
+                                    textAlign: 'center'
+                                }}>{t('label_loading')}</DescriptionLetter>
+                            </ScrollView>
+                        ) : (
+                            <ScrollView style={styles.scroll}>
+                                <ContentResponse>
+                                    <TouchableOpacity onPress={() => navigation.navigate('NewGame')} style={{ display: 'flex', width: '97%', alignItems: 'flex-end' }}>
+                                        <EvilIcons name="close" size={24} color={ColorTheme.Theme} />
+                                    </TouchableOpacity>
+
+                                    <NameLetter style={{ fontWeight: 'bold' }}>{name1} - {nomeCard1}</NameLetter>
+                                    <NameLetter>{tipoCard1}</NameLetter>
+                                    <DescriptionLetter>{descricaoCard1}</DescriptionLetter>
+
+                                    <NameLetter style={{ fontWeight: 'bold', marginTop: 20 }}>{name2} - {nomeCard2}</NameLetter>
+                                    <NameLetter>{tipoCard2}</NameLetter>
+                                    <DescriptionLetter>{descricaoCard2}</DescriptionLetter>
+
+                                    <ContentTextResponse>
+                                        <Text>{t('remember')}</Text>
+                                    </ContentTextResponse>
+
+                                    <View style={styles.flex}>
+                                        <LetterResponse source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${imagem_urlCard1}`) }} />
+                                        <LetterResponse source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${imagem_urlCard2}`) }} />
+                                    </View>
+
+                                    <TextLetter>{question.gpt_response}</TextLetter>
+                                </ContentResponse>
+                            </ScrollView >
+                        )}
+                    </>
+
+                )}
             </ContainerResponse>
         )
     }
@@ -207,5 +343,21 @@ const styles = StyleSheet.create({
         backgroundColor: ColorTheme.Branco,
         width: '100%',
         paddingHorizontal: 10,
+    },
+    flex: {
+        display: "flex",
+        alignItems: 'center',
+        flexDirection: 'row',
+        width: '100%',
+        marginTop: 25,
+        justifyContent: 'center',
+        marginBottom: 25,
+    },
+    flexBanner: {
+        display: "flex",
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%',
+        marginTop: 25,
     }
 })

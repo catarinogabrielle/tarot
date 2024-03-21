@@ -194,3 +194,45 @@ color: ${ColorTheme.Branco};
 font-size: 15px;
 text-align: center;
 `;
+
+export const ContentResponse = styled.View`
+width: 100%;
+display: flex;
+margin: 23px 0 40px 0;
+`;
+
+export const NameLetter = styled.Text`
+color: ${ColorTheme.Chumbo};
+font-size: 17px;
+font-weight: 300;
+margin-bottom: 5px;
+`;
+
+export const TextLetter = styled.Text`
+color: ${ColorTheme.Chumbo};
+font-size: 16px;
+font-weight: 300;
+margin-bottom: 10px;
+`;
+
+export const DescriptionLetter = styled.Text`
+color: ${ColorTheme.Theme};
+font-size: 15px;
+font-weight: 500;
+margin-bottom: 10px;
+`;
+
+export const LetterResponse = styled.Image`
+width: 150px;
+height: 250px;
+margin-right: 5px;
+border-radius: 4px;
+`;
+
+export const ContentTextResponse = styled.View`
+width: 100%;
+background-color: ${ColorTheme.Amarelo2};
+margin-top: 18px;
+padding: 14px 16px;
+border-radius: 30px;
+`;
