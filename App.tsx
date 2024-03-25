@@ -75,8 +75,8 @@ export default function App() {
   }, [])
 
   return (
-      <NavigationContainer>
-        <AuthProvider>
+    <NavigationContainer>
+      <AuthProvider>
           <StatusBar backgroundColor={ColorTheme.Theme} barStyle="light-content" translucent={false} />
           {available == true ? (
             <>
@@ -85,7 +85,7 @@ export default function App() {
           ) : (
             <Available />
           )}
-        </AuthProvider>
-      </NavigationContainer>
+      </AuthProvider>
+    </NavigationContainer>
   )
 }

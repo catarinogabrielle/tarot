@@ -55,5 +55,6 @@
     "update_text1": "¡Estamos emocionados de anunciar una nueva actualización de nuestra aplicación!",
     "update_text2": "Siempre queremos brindar la mejor experiencia posible y esta actualización incluye mejoras de rendimiento, correcciones de errores y funciones mejoradas.",
     "update_text3": "No olvide actualizar su aplicación para aprovechar al máximo estas mejoras.",
-    "btn_update": "Actualizar"
+    "btn_update": "Actualizar",
+    "time": "Puede tardar hasta 1 minuto en generar la respuesta"
 }

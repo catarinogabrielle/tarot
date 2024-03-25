@@ -292,15 +292,22 @@ export default function Game({ navigation }) {
                                         textAlign: 'center'
                                     }}>{t('label_loading')}</DescriptionLetter>
 
-                                    <View style={styles.flexBanner}>
-                                        <GAMBannerAd
-                                            unitId={adUnitIdBanner}
-                                            sizes={[BannerAdSize.MEDIUM_RECTANGLE]}
-                                            requestOptions={{
-                                                requestNonPersonalizedAdsOnly: true,
-                                            }}
-                                        />
-                                    </View>
+                                    <DescriptionLetter style={{
+                                        textAlign: 'center',
+                                        marginTop: 20
+                                    }}>{t('time')}</DescriptionLetter>
+
+                                    {premium != true && (
+                                        <View style={styles.flexBanner}>
+                                            <GAMBannerAd
+                                                unitId={adUnitIdBanner}
+                                                sizes={[BannerAdSize.MEDIUM_RECTANGLE]}
+                                                requestOptions={{
+                                                    requestNonPersonalizedAdsOnly: true,
+                                                }}
+                                            />
+                                        </View>
+                                    )}
                                 </ScrollView>
                             </ContentLoading>
                         ) : (

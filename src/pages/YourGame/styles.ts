@@ -120,6 +120,13 @@ margin-right: 5px;
 border-radius: 4px;
 `;
 
+export const LetterResponse2 = styled.Image`
+width: 150px;
+height: 250px;
+margin-right: 5px;
+border-radius: 4px;
+`;
+
 export const ContentLoading = styled.View`
 width: 100%;
 height: 100%;

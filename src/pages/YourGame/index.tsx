@@ -40,6 +40,7 @@ import {
     TextLetter,
     DescriptionLetter,
     LetterResponse,
+    LetterResponse2,
     ContentLoading,
     Button,
     TextButton,
@@ -172,17 +173,37 @@ export default function YourGame({ navigation }) {
                                         <NameLetter style={{ fontWeight: 'bold', color: ColorTheme.Theme, textDecorationLine: 'underline' }}>{item.pergunta}</NameLetter>
                                     )}
 
-                                    <NameLetter style={{ fontWeight: 'bold' }}>{item?.cartas?.map(i => i?.nome)}</NameLetter>
-                                    <NameLetter>{item?.cartas?.map(i => i.tipo)}</NameLetter>
-                                    <DescriptionLetter>{item?.cartas?.map(i => i?.descricao)}</DescriptionLetter>
+                                    {item?.cartas?.map(i => i?.nome).length == '1' ? (
+                                        <>
+                                            <NameLetter style={{ fontWeight: 'bold' }}>{item?.cartas?.map(i => i?.nome)}</NameLetter>
+                                            <NameLetter>{item?.cartas?.map(i => i.tipo)}</NameLetter>
+                                            <DescriptionLetter>{item?.cartas?.map(i => i?.descricao)}</DescriptionLetter>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <NameLetter style={{ fontWeight: 'bold' }}>{item?.cartas?.map(i => i.nome)[0]}</NameLetter>
+                                            <NameLetter>{item?.cartas?.map(i => i.tipo)[0]}</NameLetter>
+                                            <DescriptionLetter style={{ fontSize: 15 }}>{item?.cartas?.map(i => i?.descricao)[0]}</DescriptionLetter>
 
+                                            <NameLetter style={{ fontWeight: 'bold', marginTop: 20 }}>{item?.cartas?.map(i => i.nome)[1]}</NameLetter>
+                                            <NameLetter>{item?.cartas?.map(i => i.tipo)[1]}</NameLetter>
+                                            <DescriptionLetter style={{ fontSize: 15 }}>{item?.cartas?.map(i => i?.descricao)[1]}</DescriptionLetter>
+                                        </>
+                                    )}
                                     <ContentTextResponse>
                                         <TextIn>{t('remember')}</TextIn>
                                     </ContentTextResponse>
 
-                                    <View style={styles.flex}>
-                                        <LetterResponse source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map(i => i?.imagem_url)}`) }} />
-                                    </View>
+                                    {item?.cartas?.map(i => i?.imagem_url).length == '1' ? (
+                                        <View style={styles.flex}>
+                                            <LetterResponse source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map(i => i?.imagem_url)}`) }} />
+                                        </View>
+                                    ) : (
+                                        <View style={styles.flex2}>
+                                            <LetterResponse2 source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map(i => i?.imagem_url)[0]}`) }} />
+                                            <LetterResponse2 source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map(i => i?.imagem_url)[1]}`) }} />
+                                        </View >
+                                    )}
 
                                     <TextLetter>{item?.resposta}</TextLetter>
 
@@ -234,13 +255,20 @@ export default function YourGame({ navigation }) {
                                         }}>
                                             <ImgIn source={require('../../assets/carta.png')} />
                                             <ContentInfo>
-                                                {item.pergunta == 'conselhododia' ? (
-                                                    <TitleCard>{t('label_title_day')}</TitleCard>
+                                                {item?.cartas?.map(i => i?.imagem_url).length == '1' ? (
+                                                    <>
+                                                        {item.pergunta == 'conselhododia' ? (
+                                                            <TitleCard>{t('label_title_day')}</TitleCard>
+                                                        ) : (
+                                                            <TitleCard>{t('label_title_specific')}</TitleCard>
+                                                        )}
+                                                    </>
                                                 ) : (
-                                                    <TitleCard>{t('label_title_specific')}</TitleCard>
+                                                    <TitleCard>Tarot de Casal</TitleCard>
                                                 )}
+
                                                 <TextCard>{t('data')} <Text style={styles.TextStrong}>{toJSONLocal(item?.data_pergunta)}</Text></TextCard>
-                                                <TextCard>{t('letter')}: {item?.cartas?.map(i => i?.nome)}</TextCard>
+                                                <TextCard>{t('letter')}: {item?.cartas?.map(i => i?.nome)[0]} ; {item?.cartas?.map(i => i?.nome)[1]}</TextCard>
                                             </ContentInfo>
                                         </ContentCard>
                                     ))}
@@ -285,5 +313,14 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 25,
         marginBottom: 25,
-    }
+    },
+    flex2: {
+        display: "flex",
+        alignItems: 'center',
+        flexDirection: 'row',
+        width: '100%',
+        marginTop: 25,
+        justifyContent: 'center',
+        marginBottom: 25,
+    },
 })
