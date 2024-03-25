@@ -51,7 +51,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [loadingAuth, setLoadingAuth] = useState(false)
     const [isAuthenticated, setIsAuthenticated] = useState(true)
 
-    const [premium, setPremium] = useState(true)
+    const [premium, setPremium] = useState(false)
 
     async function handleLogin({ value }: LoginProps) {
         setLoadingAuth(true)

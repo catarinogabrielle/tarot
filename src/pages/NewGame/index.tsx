@@ -314,7 +314,7 @@ export default function NewGame({ navigation }) {
                             </Pressable>
                             <Pressable
                                 style={styles.buttonPremium}
-                                onPress={() => { }}>
+                                onPress={() => { setModalVisible(!modalVisible), navigation.navigate('Couple') }}>
                                 <Text style={styles.textStyle}>Sejá Premium</Text>
                             </Pressable>
                         </View>

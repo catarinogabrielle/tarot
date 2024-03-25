@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, TouchableOpacity, View, ImageBackground } from 'react-native';
 import { EvilIcons, AntDesign } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -37,6 +37,10 @@ import {
     ContentBePremium,
     ContentInfoPremium,
     TitleBePremium,
+    TextBePremium,
+    ContentValue,
+    TextValue,
+    TextValue2,
     ButtonBePremium,
     TextBtnBePremium,
     DescriptionLetter,
@@ -256,15 +260,49 @@ export default function Couple({ navigation }) {
                     publishableKey="pk_test_51OwSDII6KpCwG5t5pbYDPBtg2PQSMefGUpnZjINIBhTDurFLUPCHUQHIHFi4No1eXKUvYi2RixhXcC2wJWXTvbT5004xhzc71T"
                     merchantIdentifier="merchant.identifier" // required for Apple Pay
                 >
-                    <ContentBePremium>
-                        <ContentInfoPremium>
-                            <TitleBePremium>Você ainda não é premium</TitleBePremium>
+                    <ImageBackground source={require('../../assets/banner.png')} resizeMode="cover" style={styles.image}>
+                        <ContentBePremium>
+                            <ContentInfoPremium>
+                                <View style={{ width: '100%', height: 'auto' }}>
+                                    <TitleBePremium>Seja Premium</TitleBePremium>
 
-                            <ButtonBePremium onPress={Pay}>
-                                <TextBtnBePremium>Seja Premium</TextBtnBePremium>
-                            </ButtonBePremium>
-                        </ContentInfoPremium>
-                    </ContentBePremium>
+                                    <View style={styles.premiumFlex}>
+                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                        <TextBePremium>Descubra situações que estão a seu favor no amor.</TextBePremium>
+                                    </View>
+
+                                    <View style={styles.premiumFlex}>
+                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                        <TextBePremium>Conheça os desafios que podem interferir na sua vida amorosa.</TextBePremium>
+                                    </View>
+
+                                    <View style={styles.premiumFlex}>
+                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                        <TextBePremium>Leia conselhos direcionados para suas questões.</TextBePremium>
+                                    </View>
+
+                                    <View style={styles.premiumFlex}>
+                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                        <TextBePremium>Faça perguntas específicas quando quiser sem anúncio.</TextBePremium>
+                                    </View>
+
+                                    <View style={styles.premiumFlex}>
+                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                        <TextBePremium>Melhore sua experiência diária em seus jogos.</TextBePremium>
+                                    </View>
+
+                                    <ContentValue>
+                                        <TextValue>R$29,90</TextValue>
+                                        <TextValue2>Mensal</TextValue2>
+                                    </ContentValue>
+                                </View>
+
+                                <ButtonBePremium onPress={Pay}>
+                                    <TextBtnBePremium>Quero ser Premium</TextBtnBePremium>
+                                </ButtonBePremium>
+                            </ContentInfoPremium>
+                        </ContentBePremium>
+                    </ImageBackground>
                 </StripeProvider>
             ) : (
                 <>
@@ -387,5 +425,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%',
         marginTop: 25,
-    }
+    },
+    premiumFlex: {
+        display: "flex",
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginTop: 15,
+    },
+    image: {
+        flex: 1,
+        justifyContent: 'center',
+    },
 })

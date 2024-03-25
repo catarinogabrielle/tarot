@@ -172,28 +172,58 @@ justify-content: center;
 `;
 
 export const ContentInfoPremium = styled.View`
-width: 80%;
-height: 80%;
+width: 85%;
+height: 78%;
 display: flex;
 background-color: ${ColorTheme.Branco};
 border-radius: 8px;
-align-items: center;
-justify-content: center;
-padding: 20px;
+padding: 25px 26px 20px 26px;
+justify-content: space-between;
 `;
 
 export const TitleBePremium = styled.Text`
-color: ${ColorTheme.Preto};
-font-size: 17px;
-font-weight: 400;
+color: ${ColorTheme.Theme};
+font-size: 26px;
+font-weight: 600;
+margin-bottom: 7px;
 text-align: center;
+`;
+
+export const TextBePremium = styled.Text`
+color: ${ColorTheme.Preto};
+font-size: 16px;
+font-weight: 400;
+margin-left: 16px;
+width: 85%;
+`;
+
+export const ContentValue = styled.View`
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+margin-top: 22px;
+`;
+
+export const TextValue = styled.Text`
+color: ${ColorTheme.Theme};
+font-size: 47px;
+font-weight: 800;
+`;
+
+export const TextValue2 = styled.Text`
+color: ${ColorTheme.Theme};
+font-size: 15px;
+margin-top: 16px;
+font-weight: 400;
+margin-left: 6px;
+text-decoration: underline;
 `;
 
 export const ButtonBePremium = styled.TouchableOpacity`
 width: 100%;
-margin: 25px 0 0 0;
 align-items: center;
-background-color: ${ColorTheme.Theme};
+background-color: ${ColorTheme.Verde};
 padding: 10px;
 border-radius: 4px;
 `;
