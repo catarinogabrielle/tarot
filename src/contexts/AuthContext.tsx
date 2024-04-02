@@ -1,4 +1,4 @@
-import React, { useState, createContext, ReactNode } from "react";
+import React, { useState, createContext, ReactNode, useEffect } from "react";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTranslation } from 'react-i18next';
@@ -52,6 +52,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated, setIsAuthenticated] = useState(true)
 
     const [premium, setPremium] = useState(false)
+
+    async function premiun() {
+        const storageIMEI = await AsyncStorage.getItem('@IMEI')
+        let handleStorageIMEI = JSON.parse(storageIMEI || '{}')
+
+        try {
+            await Api.post('/api/index.php?request=users&action=return', {
+                IMEI: handleStorageIMEI
+            }).then(response => {
+                const premiumStatus = response.data.data.premium
+                if (premiumStatus == 0) {
+                    console.log('premium 0')
+                    setPremium(false)
+                    return;
+                } else {
+                    setPremium(true)
+                    console.log('premium 1')
+                }
+            }).catch((err) => {
+                console.log('erro', err)
+            })
+        } catch (err) {
+            console.log('erro', err)
+        }
+    }
+
+    useEffect(() => {
+        premiun()
+    }, [])
 
     async function handleLogin({ value }: LoginProps) {
         setLoadingAuth(true)

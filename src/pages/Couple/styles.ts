@@ -173,7 +173,7 @@ justify-content: center;
 
 export const ContentInfoPremium = styled.View`
 width: 85%;
-height: 78%;
+height: max-content;
 display: flex;
 background-color: ${ColorTheme.Branco};
 border-radius: 8px;
@@ -226,6 +226,7 @@ align-items: center;
 background-color: ${ColorTheme.Verde};
 padding: 10px;
 border-radius: 4px;
+margin-top: 25px;
 `;
 
 export const TextBtnBePremium = styled.Text`

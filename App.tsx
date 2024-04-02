@@ -3,6 +3,7 @@ import { StatusBar, PermissionsAndroid } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { NavigationContainer } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
+import inAppMessaging from '@react-native-firebase/in-app-messaging';
 
 import Routes from "./src/routes";
 import Available from "./src/pages/Available";
@@ -16,6 +17,7 @@ PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 
 export default function App() {
   const [available, setAvailable] = useState(true)
+  const [UpUser, setupUser] = useState()
 
   const checkAppVersion = async () => {
     try {
@@ -74,17 +76,25 @@ export default function App() {
     })
   }, [])
 
+  async function bootstrap() {
+    await inAppMessaging().setMessagesDisplaySuppressed(true);
+  }
+
+  useEffect(() => {
+    bootstrap
+  }, [])
+
   return (
     <NavigationContainer>
       <AuthProvider>
-          <StatusBar backgroundColor={ColorTheme.Theme} barStyle="light-content" translucent={false} />
-          {available == true ? (
-            <>
-              <Routes />
-            </>
-          ) : (
-            <Available />
-          )}
+        <StatusBar backgroundColor={ColorTheme.Theme} barStyle="light-content" translucent={false} />
+        {available == true ? (
+          <>
+            <Routes />
+          </>
+        ) : (
+          <Available />
+        )}
       </AuthProvider>
     </NavigationContainer>
   )
