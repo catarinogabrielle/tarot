@@ -56,5 +56,21 @@
     "update_text2": "Siempre queremos brindar la mejor experiencia posible y esta actualización incluye mejoras de rendimiento, correcciones de errores y funciones mejoradas.",
     "update_text3": "No olvide actualizar su aplicación para aprovechar al máximo estas mejoras.",
     "btn_update": "Actualizar",
-    "time": "Puede tardar hasta 1 minuto en generar la respuesta"
+    "time": "Puede tardar hasta 1 minuto en generar la respuesta",
+    "seja_premium": "Sea Premium",
+    "label_premium1": "Descubre situaciones que están a tu favor en el amor.",
+    "label_premium2": "Descubre los desafíos que pueden interferir con tu vida amorosa.",
+    "label_premium3": "Lea consejos dirigidos a sus preguntas.",
+    "label_premium4": "Haz preguntas específicas cuando quieras sin publicidad.",
+    "label_premium5": "Mejora tu experiencia de juego diaria.",
+    "amount": "U$5,00",
+    "mensal": "Mensual",
+    "conselho_amor": "Tu consejo de amor",
+    "placeholder": "Digite aquí",
+    "next": "Próximo",
+    "couple_name": "Introduce el nombre de la persona elegida",
+    "names": "Nombres elegidos",
+    "pense": "Piensa en la persona que nombraste",
+    "couple": "Concéntrate y pide mentalmente orientación para obtener la respuesta de los dos nombres involucrados. Solo puedes robar una carta, así que cuando te sientas listo, baraja las cartas.",
+    "choice_couple": "Elige la tarjeta"
 }

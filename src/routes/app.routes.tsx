@@ -50,6 +50,7 @@ function StackScreen() {
     )
 }
 
+
 export default function AppRoutes() {
     return (
         <Tab.Navigator initialRouteName="StackScreen" screenOptions={{
@@ -85,6 +86,7 @@ export default function AppRoutes() {
                     }
                 }}
             />
+
             <Tab.Screen
                 name="Couple"
                 component={Couple}
@@ -94,6 +96,7 @@ export default function AppRoutes() {
                     }
                 }}
             />
+
             <Tab.Screen
                 name="Profile"
                 component={Profile}

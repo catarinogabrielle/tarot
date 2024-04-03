@@ -220,21 +220,6 @@ margin-left: 6px;
 text-decoration: underline;
 `;
 
-export const ButtonBePremium = styled.TouchableOpacity`
-width: 100%;
-align-items: center;
-background-color: ${ColorTheme.Verde};
-padding: 10px;
-border-radius: 4px;
-margin-top: 25px;
-`;
-
-export const TextBtnBePremium = styled.Text`
-color: ${ColorTheme.Branco};
-font-size: 15px;
-text-align: center;
-`;
-
 export const ContentResponse = styled.View`
 width: 100%;
 display: flex;

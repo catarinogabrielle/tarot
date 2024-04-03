@@ -89,9 +89,7 @@ export default function App() {
       <AuthProvider>
         <StatusBar backgroundColor={ColorTheme.Theme} barStyle="light-content" translucent={false} />
         {available == true ? (
-          <>
-            <Routes />
-          </>
+          <Routes />
         ) : (
           <Available />
         )}

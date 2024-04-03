@@ -25,7 +25,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignIn() {
-    const { signIn, handleLogin } = useContext(AuthContext)
+    const { signIn, handleLogin, handlePremiunState } = useContext(AuthContext)
 
     const [email, setEmai] = useState('')
     const [password, setPassword] = useState('')
@@ -39,7 +39,6 @@ export default function SignIn() {
             ]);
             return;
         }
-
         await signIn({ email, password })
     }
 
@@ -52,6 +51,7 @@ export default function SignIn() {
         await AsyncStorage.removeItem("@deviceStorageDate")
         await AsyncStorage.removeItem("@deviceStorageInfo")
         await AsyncStorage.removeItem("@IMEI")
+        await handlePremiunState({ value })
     }
 
     async function toogleBack() {

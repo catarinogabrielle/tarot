@@ -10,6 +10,7 @@ type AuthContextDatra = {
     isAuthenticated: boolean;
     signIn: (credentials: SignInProps) => Promise<void>;
     handleLogin: (credentials: LoginProps) => Promise<void>;
+    handlePremiunState: (credentials: PremiumProps) => Promise<void>;
     loadingAuth: boolean;
     premium: boolean
 }
@@ -36,6 +37,10 @@ type LoginProps = {
     value: boolean
 }
 
+type PremiumProps = {
+    value: boolean
+}
+
 export const AuthContext = createContext({} as AuthContextDatra)
 
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -53,7 +58,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const [premium, setPremium] = useState(false)
 
-    async function premiun() {
+    async function handlePremiun() {
         const storageIMEI = await AsyncStorage.getItem('@IMEI')
         let handleStorageIMEI = JSON.parse(storageIMEI || '{}')
 
@@ -72,15 +77,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 }
             }).catch((err) => {
                 console.log('erro', err)
+                setPremium(false)
             })
         } catch (err) {
             console.log('erro', err)
+            setPremium(false)
         }
     }
 
     useEffect(() => {
-        premiun()
+        handlePremiun()
     }, [])
+
+    async function handlePremiunState({ value }: PremiumProps) {
+        handlePremiun()
+    }
 
     async function handleLogin({ value }: LoginProps) {
         setLoadingAuth(true)
@@ -134,10 +145,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         await AsyncStorage.removeItem("@deviceStorageDate")
         await AsyncStorage.removeItem("@deviceStorageInfo")
         await AsyncStorage.setItem('@IMEI', JSON.stringify(IMEI_user))
+        handlePremiun()
     }
 
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, signIn, handleLogin, loadingAuth, premium }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, signIn, handleLogin, loadingAuth, premium, handlePremiunState }}>
             {children}
         </AuthContext.Provider>
     )

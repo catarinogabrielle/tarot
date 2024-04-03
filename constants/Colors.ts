@@ -21,6 +21,7 @@ export default {
 
 		Amarelo: '#d9c300',
 		Amarelo2: '#FFEEA9',
+		Dourado: '#e08d07',
 
 		Laranja: '#fa790f',
 

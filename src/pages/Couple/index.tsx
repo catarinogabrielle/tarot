@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, TouchableOpacity, View, ImageBackground } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View, ImageBackground, Alert } from 'react-native';
 import { EvilIcons, AntDesign } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,6 +10,9 @@ import { AuthContext } from '../../contexts/AuthContext';
 
 import Colors from "../../../constants/Colors";
 const ColorTheme = Colors['Theme'];
+
+import { PlatformPay, PlatformPayButton, StripeProvider, usePlatformPay } from '@stripe/stripe-react-native';
+const publishableKey = "pk_test_51OwSDII6KpCwG5t5pbYDPBtg2PQSMefGUpnZjINIBhTDurFLUPCHUQHIHFi4No1eXKUvYi2RixhXcC2wJWXTvbT5004xhzc71T"
 
 import { Api } from "../../services/api"
 
@@ -41,8 +44,6 @@ import {
     ContentValue,
     TextValue,
     TextValue2,
-    ButtonBePremium,
-    TextBtnBePremium,
     DescriptionLetter,
     ContentResponse,
     NameLetter,
@@ -51,10 +52,8 @@ import {
     TextLetter
 } from './styles';
 
-import { StripeProvider } from "@stripe/stripe-react-native";
-
 export default function Couple({ navigation }) {
-    const { premium } = useContext(AuthContext)
+    const { premium, handlePremiunState } = useContext(AuthContext)
     const [name1, setName1] = useState('')
     const [saveName1, setSaveName1] = useState(false)
     const [name2, setName2] = useState('')
@@ -141,10 +140,10 @@ export default function Couple({ navigation }) {
                 {loadingResponse != true ? (
                     <>
                         {idCard1 === 0 && (
-                            <TitleInitial>Escolha a carta de {name1}</TitleInitial>
+                            <TitleInitial>{t('choice_couple')} {name1}</TitleInitial>
                         )}
                         {idCard1 != 0 && (
-                            <TitleInitial>Escolha a carta de {name2}</TitleInitial>
+                            <TitleInitial>{t('choice_couple')} {name2}</TitleInitial>
                         )}
 
                         <TitleLabel>{t('label_choice')}</TitleLabel>
@@ -249,61 +248,172 @@ export default function Couple({ navigation }) {
         )
     }
 
-    async function Pay() {
+    const {
+        isPlatformPaySupported,
+        confirmPlatformPayPayment,
+    } = usePlatformPay();
 
+    React.useEffect(() => {
+        (async function () {
+            if (!(await isPlatformPaySupported({ googlePay: { testEnv: true } }))) {
+                Alert.alert('Google Pay is not supported.');
+                return;
+            }
+        })();
+    }, []);
+
+    const fetchPaymentIntentClientSecret = async () => {
+        // Fetch payment intent created on the server, see above
+        const response = await fetch(`https://ymonetize.com/apps/app_tarot/api/v1/subscription/create-payment-intent.php`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                currency: 'usd',
+            }),
+        });
+        const { clientSecret } = await response.json();
+
+        return clientSecret;
+    };
+
+    const pay = async () => {
+        const storageIMEI = await AsyncStorage.getItem('@IMEI')
+
+        if (storageIMEI == null) {
+            navigation.navigate('Game')
+        } else {
+
+            const clientSecret = await fetchPaymentIntentClientSecret();
+
+            const { error } = await confirmPlatformPayPayment(
+                clientSecret,
+                {
+                    googlePay: {
+                        testEnv: true,
+                        merchantName: 'My merchant name',
+                        merchantCountryCode: 'US',
+                        currencyCode: 'USD',
+                        billingAddressConfig: {
+                            format: PlatformPay.BillingAddressFormat.Full,
+                            isPhoneNumberRequired: true,
+                            isRequired: true,
+                        },
+                    },
+                }
+            );
+
+            if (error) {
+                Alert.alert(error.code, error.message);
+                // Update UI to prompt user to retry payment (and possibly another payment method)
+                return;
+            }
+            getImei()
+        }
+    };
+
+    async function getImei() {
+        const storageIMEI = await AsyncStorage.getItem('@IMEI')
+        let handleStorageIMEI = JSON.parse(storageIMEI || '{}')
+
+        try {
+            await Api.post('/api/index.php?request=users&action=return', {
+                IMEI: handleStorageIMEI
+            }).then(response => {
+                const USER_ID = response.data
+                getUpgradePremium(USER_ID)
+            }).catch((err) => {
+                console.log('erro', err)
+            })
+        } catch (err) {
+            console.log('erro', err)
+        }
+    }
+
+    async function getUpgradePremium(USER_ID) {
+        const id = USER_ID.data.usuario_id
+
+        try {
+            await Api.post('/api/index.php?request=users&action=upgrade-premium', {
+                user_id: id
+            }).then(response => {
+                console.log(response.data)
+                tooglePremium()
+                navigation.navigate('NewGame')
+            }).catch((err) => {
+                console.log('erro', err)
+            })
+        } catch (err) {
+            console.log('erro', err)
+        }
+    }
+
+    async function tooglePremium() {
+        const value = true
+        await handlePremiunState({ value })
     }
 
     return (
         <Container>
             {premium != true ? (
-                <StripeProvider
-                    publishableKey="pk_test_51OwSDII6KpCwG5t5pbYDPBtg2PQSMefGUpnZjINIBhTDurFLUPCHUQHIHFi4No1eXKUvYi2RixhXcC2wJWXTvbT5004xhzc71T"
-                    merchantIdentifier="merchant.identifier" // required for Apple Pay
-                >
-                    <ImageBackground source={require('../../assets/banner.png')} resizeMode="cover" style={styles.image}>
+                <ImageBackground source={require('../../assets/banner.png')} resizeMode="cover" style={styles.image}>
+                    <StripeProvider
+                        publishableKey={publishableKey}
+                        merchantIdentifier="merchant.identifier"
+                        urlScheme="your-url-scheme"
+                    >
                         <ContentBePremium>
                             <ContentInfoPremium>
                                 <View style={{ width: '100%', height: 'auto' }}>
-                                    <TitleBePremium>Seja Premium</TitleBePremium>
+                                    <TitleBePremium>{t('seja_premium')}</TitleBePremium>
 
                                     <View style={styles.premiumFlex}>
                                         <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>Descubra situações que estão a seu favor no amor.</TextBePremium>
+                                        <TextBePremium>{t('label_premium1')}</TextBePremium>
                                     </View>
 
                                     <View style={styles.premiumFlex}>
                                         <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>Conheça os desafios que podem interferir na sua vida amorosa.</TextBePremium>
+                                        <TextBePremium>{t('label_premium2')}</TextBePremium>
                                     </View>
 
                                     <View style={styles.premiumFlex}>
                                         <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>Leia conselhos direcionados para suas questões.</TextBePremium>
+                                        <TextBePremium>{t('label_premium3')}</TextBePremium>
                                     </View>
 
                                     <View style={styles.premiumFlex}>
                                         <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>Faça perguntas específicas quando quiser sem anúncio.</TextBePremium>
+                                        <TextBePremium>{t('label_premium4')}</TextBePremium>
                                     </View>
 
                                     <View style={styles.premiumFlex}>
                                         <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>Melhore sua experiência diária em seus jogos.</TextBePremium>
+                                        <TextBePremium>{t('label_premium5')}</TextBePremium>
                                     </View>
 
                                     <ContentValue>
-                                        <TextValue>R$29,90</TextValue>
-                                        <TextValue2>Mensal</TextValue2>
+                                        <TextValue>{t('amount')}</TextValue>
+                                        <TextValue2>{t('mensal')}</TextValue2>
                                     </ContentValue>
                                 </View>
 
-                                <ButtonBePremium onPress={Pay}>
-                                    <TextBtnBePremium>Quero ser Premium</TextBtnBePremium>
-                                </ButtonBePremium>
+                                <View>
+                                    <PlatformPayButton
+                                        type={PlatformPay.ButtonType.Pay}
+                                        onPress={pay}
+                                        style={{
+                                            width: '100%',
+                                            marginTop: 25,
+                                            height: 50,
+                                        }}
+                                    />
+                                </View>
                             </ContentInfoPremium>
                         </ContentBePremium>
-                    </ImageBackground>
-                </StripeProvider>
+                    </StripeProvider>
+                </ImageBackground>
             ) : (
                 <>
                     <Header>
@@ -317,25 +427,25 @@ export default function Couple({ navigation }) {
                         }} style={{ position: 'absolute', left: 19 }}>
                             <AntDesign name="arrowleft" size={24} color={ColorTheme.Branco} />
                         </TouchableOpacity>
-                        <ATitleHeader>Seu conselho de amor</ATitleHeader>
+                        <ATitleHeader>{t('conselho_amor')}</ATitleHeader>
                     </Header>
                     {startGame != true ? (
                         <ScrollView style={styles.scroll}>
                             <Content>
                                 {saveName1 != true ? (
                                     <>
-                                        <Title>1 - Digite seu nome</Title>
+                                        <Title>1 - {t('name')}</Title>
 
                                         <ContentInput>
                                             <Input
                                                 onChangeText={(text: React.SetStateAction<string>) => setName1(text)}
                                                 placeholderTextColor={ColorTheme.Cinza_escuro}
-                                                placeholder={'Digite aqui'}
+                                                placeholder={t('placeholder')}
                                             />
 
                                             {name1 != '' && (
                                                 <Button onPress={() => { setSaveName1(true) }}>
-                                                    <TextButton>Próximo</TextButton>
+                                                    <TextButton>{t('next')}</TextButton>
                                                 </Button>
                                             )}
                                         </ContentInput>
@@ -344,37 +454,37 @@ export default function Couple({ navigation }) {
                                     <>
                                         {saveName2 != true ? (
                                             <>
-                                                <Title>2 - Digite o nome da pessoa escolhida</Title>
+                                                <Title>2 - {t('couple_name')}</Title>
 
                                                 <ContentInput>
                                                     <Input
                                                         onChangeText={(text: React.SetStateAction<string>) => setName2(text)}
                                                         placeholderTextColor={ColorTheme.Cinza_escuro}
-                                                        placeholder={'Digite aqui'}
+                                                        placeholder={t('placeholder')}
                                                     />
 
                                                     {name2 != '' && (
                                                         <Button onPress={() => { setSaveName2(true) }}>
-                                                            <TextButton>Próximo</TextButton>
+                                                            <TextButton>{t('next')}</TextButton>
                                                         </Button>
                                                     )}
                                                 </ContentInput>
                                             </>
                                         ) : (
                                             <>
-                                                <Title>Nomes escolhidos:</Title>
+                                                <Title>{t('names')}:</Title>
                                                 <Name>{name1} & {name2}</Name>
 
-                                                <Title>3 - Pense na pessoa que você colocou o nome</Title>
+                                                <Title>3 - {t('pense')}</Title>
 
                                                 <ContentText>
-                                                    <Text>Concentre-se e peça mentalmente uma orientação para a ter a resposta dos dois nomes envolvidos. Você só pode tirar uma carta, por isso, quando se sentir preparado embaralhe as cartas.</Text>
+                                                    <Text>{t('couple')}</Text>
                                                 </ContentText>
 
                                                 <Button onPress={() => {
                                                     handleCards()
                                                 }}>
-                                                    <TextButton>Embaralhar cartas</TextButton>
+                                                    <TextButton>{t('btn_shuffle')}</TextButton>
                                                 </Button>
 
                                                 <ContentImage>

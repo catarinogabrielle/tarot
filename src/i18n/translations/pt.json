@@ -56,5 +56,21 @@
     "update_text2": "Queremos sempre oferecer a melhor experiência possível, e esta atualização inclui melhorias de desempenho, correções de bugs e recursos aprimorados.",
     "update_text3": "Por favor, não se esqueça de atualizar seu aplicativo para aproveitar ao máximo essas melhorias.",
     "btn_update": "Atualizar",
-    "time": "Pode demorar até 1 minuto para gerar a resposta"
+    "time": "Pode demorar até 1 minuto para gerar a resposta",
+    "seja_premium": "Seja Premium",
+    "label_premium1": "Descubra situações que estão a seu favor no amor.",
+    "label_premium2": "Conheça os desafios que podem interferir na sua vida amorosa.",
+    "label_premium3": "Leia conselhos direcionados para suas questões.",
+    "label_premium4": "Faça perguntas específicas quando quiser sem anúncio.",
+    "label_premium5": "Melhore sua experiência diária em seus jogos.",
+    "amount": "U$5,00",
+    "mensal": "Mensal",
+    "conselho_amor": "Seu conselho de amor",
+    "placeholder": "Digite aqui",
+    "next": "Próximo",
+    "couple_name": "Digite o nome da pessoa escolhida",
+    "names": "Nomes escolhidos",
+    "pense": "Pense na pessoa que você colocou o nome",
+    "couple": "Concentre-se e peça mentalmente uma orientação para a ter a resposta dos dois nomes envolvidos. Você só pode tirar uma carta, por isso, quando se sentir preparado embaralhe as cartas.",
+    "choice_couple": "Escolha a carta de"
 }
