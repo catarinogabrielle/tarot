@@ -72,5 +72,8 @@
     "names": "Names chosen",
     "pense": "Think about the person you named",
     "couple": "Concentrate and mentally ask for guidance to get the answer from the two names involved. You can only draw one card, so when you feel ready, shuffle the cards.",
-    "choice_couple": "Choose the card"
+    "choice_couple": "Choose the card",
+    "not_premium": "Stop being premium",
+    "label_not_premium": "To cancel the plan you need to confirm using the button below.",
+    "cancel": "Cancel premium plan"
 }

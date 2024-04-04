@@ -11,36 +11,29 @@ import Available from "./src/pages/Available";
 import { AuthProvider } from './src/contexts/AuthContext';
 
 import Colors from "./constants/Colors";
+import { Api } from "./src/services/api";
 const ColorTheme = Colors['Theme'];
 
 PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
 
 export default function App() {
   const [available, setAvailable] = useState(true)
-  const [UpUser, setupUser] = useState()
 
   const checkAppVersion = async () => {
+    const installedVersion = await DeviceInfo.getVersion()
+
     try {
-      const installedVersion = await DeviceInfo.getVersion()
-
-      const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.gabrielledcastro.mobile'
-
-      const response = await fetch(playStoreUrl)
-      const html = await response.text()
-
-      const match = html.match(/<div[^>]*>Versão[^<]*<\/div><span[^>]*>([^<]*)<\/span>/)
-      const latestVersion = match ? match[1] : null
-
-      if (latestVersion && installedVersion !== latestVersion) {
-        console.log('O aplicativo está desatualizado!')
-        setAvailable(false)
-      } else {
-
-        console.log('O aplicativo está atualizado!')
-        setAvailable(true)
-      }
-    } catch (error) {
-      console.error('Erro ao verificar a versão do aplicativo:', error)
+      await Api.get(`/api/last-app-version.php`).then(response => {
+        if (installedVersion !== response.data.version) {
+          setAvailable(false)
+        } else {
+          setAvailable(true)
+        }
+      }).catch((err) => {
+        console.log('erro', err)
+      })
+    } catch (err) {
+      console.log('erro', err)
     }
   }
 

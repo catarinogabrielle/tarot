@@ -338,7 +338,7 @@ export default function Couple({ navigation }) {
             await Api.post('/api/index.php?request=users&action=upgrade-premium', {
                 user_id: id
             }).then(response => {
-                console.log(response.data)
+                Alert.alert('Success', 'The payment was confirmed successfully.');
                 tooglePremium()
                 navigation.navigate('NewGame')
             }).catch((err) => {

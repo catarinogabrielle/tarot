@@ -72,5 +72,8 @@
     "names": "Nomes escolhidos",
     "pense": "Pense na pessoa que você colocou o nome",
     "couple": "Concentre-se e peça mentalmente uma orientação para a ter a resposta dos dois nomes envolvidos. Você só pode tirar uma carta, por isso, quando se sentir preparado embaralhe as cartas.",
-    "choice_couple": "Escolha a carta de"
+    "choice_couple": "Escolha a carta de",
+    "not_premium": "Deixar de ser premium",
+    "label_not_premium": "Para cancelar o plano você precisa confirmar no botão a baixo.",
+    "cancel": "Cancelar plano premium"
 }

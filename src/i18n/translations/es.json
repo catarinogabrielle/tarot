@@ -72,5 +72,8 @@
     "names": "Nombres elegidos",
     "pense": "Piensa en la persona que nombraste",
     "couple": "Concéntrate y pide mentalmente orientación para obtener la respuesta de los dos nombres involucrados. Solo puedes robar una carta, así que cuando te sientas listo, baraja las cartas.",
-    "choice_couple": "Elige la tarjeta"
+    "choice_couple": "Elige la tarjeta",
+    "not_premium": "Deja de ser premium",
+    "label_not_premium": "Para cancelar el plan necesitas confirmar usando el botón a continuación.",
+    "cancel": "Cancelar plan premium"
 }

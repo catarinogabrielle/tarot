@@ -67,7 +67,7 @@ color: ${ColorTheme.Theme};
 font-size: 15px;
 `;
 
-export const Alert = styled.Text`
+export const Alert1 = styled.Text`
 color: ${ColorTheme.Vermelho};
 font-size: 12px;
 `;

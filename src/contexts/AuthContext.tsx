@@ -68,12 +68,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
             }).then(response => {
                 const premiumStatus = response.data.data.premium
                 if (premiumStatus == 0) {
-                    console.log('premium 0')
                     setPremium(false)
                     return;
                 } else {
                     setPremium(true)
-                    console.log('premium 1')
                 }
             }).catch((err) => {
                 console.log('erro', err)
