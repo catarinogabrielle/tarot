@@ -11,9 +11,6 @@ import { AuthContext } from '../../contexts/AuthContext';
 import Colors from "../../../constants/Colors";
 const ColorTheme = Colors['Theme'];
 
-import { PlatformPay, PlatformPayButton, StripeProvider, usePlatformPay } from '@stripe/stripe-react-native';
-const publishableKey = "pk_test_51OwSDII6KpCwG5t5pbYDPBtg2PQSMefGUpnZjINIBhTDurFLUPCHUQHIHFi4No1eXKUvYi2RixhXcC2wJWXTvbT5004xhzc71T"
-
 import { Api } from "../../services/api"
 
 import {
@@ -53,7 +50,7 @@ import {
 } from './styles';
 
 export default function Couple({ navigation }) {
-    const { premium, handlePremiunState } = useContext(AuthContext)
+    const { premium } = useContext(AuthContext)
     const [name1, setName1] = useState('')
     const [saveName1, setSaveName1] = useState(false)
     const [name2, setName2] = useState('')
@@ -248,171 +245,51 @@ export default function Couple({ navigation }) {
         )
     }
 
-    const {
-        isPlatformPaySupported,
-        confirmPlatformPayPayment,
-    } = usePlatformPay();
-
-    React.useEffect(() => {
-        (async function () {
-            if (!(await isPlatformPaySupported({ googlePay: { testEnv: true } }))) {
-                Alert.alert('Google Pay is not supported.');
-                return;
-            }
-        })();
-    }, []);
-
-    const fetchPaymentIntentClientSecret = async () => {
-        // Fetch payment intent created on the server, see above
-        const response = await fetch(`https://ymonetize.com/apps/app_tarot/api/v1/subscription/create-payment-intent.php`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                currency: 'usd',
-            }),
-        });
-        const { clientSecret } = await response.json();
-
-        return clientSecret;
-    };
-
-    const pay = async () => {
-        const storageIMEI = await AsyncStorage.getItem('@IMEI')
-
-        if (storageIMEI == null) {
-            navigation.navigate('Game')
-        } else {
-
-            const clientSecret = await fetchPaymentIntentClientSecret();
-
-            const { error } = await confirmPlatformPayPayment(
-                clientSecret,
-                {
-                    googlePay: {
-                        testEnv: true,
-                        merchantName: 'My merchant name',
-                        merchantCountryCode: 'US',
-                        currencyCode: 'USD',
-                        billingAddressConfig: {
-                            format: PlatformPay.BillingAddressFormat.Full,
-                            isPhoneNumberRequired: true,
-                            isRequired: true,
-                        },
-                    },
-                }
-            );
-
-            if (error) {
-                Alert.alert(error.code, error.message);
-                // Update UI to prompt user to retry payment (and possibly another payment method)
-                return;
-            }
-            getImei()
-        }
-    };
-
-    async function getImei() {
-        const storageIMEI = await AsyncStorage.getItem('@IMEI')
-        let handleStorageIMEI = JSON.parse(storageIMEI || '{}')
-
-        try {
-            await Api.post('/api/index.php?request=users&action=return', {
-                IMEI: handleStorageIMEI
-            }).then(response => {
-                const USER_ID = response.data
-                getUpgradePremium(USER_ID)
-            }).catch((err) => {
-                console.log('erro', err)
-            })
-        } catch (err) {
-            console.log('erro', err)
-        }
-    }
-
-    async function getUpgradePremium(USER_ID) {
-        const id = USER_ID.data.usuario_id
-
-        try {
-            await Api.post('/api/index.php?request=users&action=upgrade-premium', {
-                user_id: id
-            }).then(response => {
-                Alert.alert('Success', 'The payment was confirmed successfully.');
-                tooglePremium()
-                navigation.navigate('NewGame')
-            }).catch((err) => {
-                console.log('erro', err)
-            })
-        } catch (err) {
-            console.log('erro', err)
-        }
-    }
-
-    async function tooglePremium() {
-        const value = true
-        await handlePremiunState({ value })
-    }
-
     return (
         <Container>
             {premium != true ? (
                 <ImageBackground source={require('../../assets/banner.png')} resizeMode="cover" style={styles.image}>
-                    <StripeProvider
-                        publishableKey={publishableKey}
-                        merchantIdentifier="merchant.identifier"
-                        urlScheme="your-url-scheme"
-                    >
-                        <ContentBePremium>
-                            <ContentInfoPremium>
-                                <View style={{ width: '100%', height: 'auto' }}>
-                                    <TitleBePremium>{t('seja_premium')}</TitleBePremium>
+                    <ContentBePremium>
+                        <ContentInfoPremium>
+                            <View style={{ width: '100%', height: 'auto' }}>
+                                <TitleBePremium>{t('seja_premium')}</TitleBePremium>
 
-                                    <View style={styles.premiumFlex}>
-                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>{t('label_premium1')}</TextBePremium>
-                                    </View>
-
-                                    <View style={styles.premiumFlex}>
-                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>{t('label_premium2')}</TextBePremium>
-                                    </View>
-
-                                    <View style={styles.premiumFlex}>
-                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>{t('label_premium3')}</TextBePremium>
-                                    </View>
-
-                                    <View style={styles.premiumFlex}>
-                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>{t('label_premium4')}</TextBePremium>
-                                    </View>
-
-                                    <View style={styles.premiumFlex}>
-                                        <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
-                                        <TextBePremium>{t('label_premium5')}</TextBePremium>
-                                    </View>
-
-                                    <ContentValue>
-                                        <TextValue>{t('amount')}</TextValue>
-                                        <TextValue2>{t('mensal')}</TextValue2>
-                                    </ContentValue>
+                                <View style={styles.premiumFlex}>
+                                    <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                    <TextBePremium>{t('label_premium1')}</TextBePremium>
                                 </View>
 
-                                <View>
-                                    <PlatformPayButton
-                                        type={PlatformPay.ButtonType.Pay}
-                                        onPress={pay}
-                                        style={{
-                                            width: '100%',
-                                            marginTop: 25,
-                                            height: 50,
-                                        }}
-                                    />
+                                <View style={styles.premiumFlex}>
+                                    <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                    <TextBePremium>{t('label_premium2')}</TextBePremium>
                                 </View>
-                            </ContentInfoPremium>
-                        </ContentBePremium>
-                    </StripeProvider>
+
+                                <View style={styles.premiumFlex}>
+                                    <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                    <TextBePremium>{t('label_premium3')}</TextBePremium>
+                                </View>
+
+                                <View style={styles.premiumFlex}>
+                                    <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                    <TextBePremium>{t('label_premium4')}</TextBePremium>
+                                </View>
+
+                                <View style={styles.premiumFlex}>
+                                    <AntDesign name="checkcircle" size={18} color={ColorTheme.Verde} />
+                                    <TextBePremium>{t('label_premium5')}</TextBePremium>
+                                </View>
+
+                                <ContentValue>
+                                    <TextValue>{t('amount')}</TextValue>
+                                    <TextValue2>{t('mensal')}</TextValue2>
+                                </ContentValue>
+                            </View>
+
+                            <Button>
+                                <TextButton>Seja Premium</TextButton>
+                            </Button>
+                        </ContentInfoPremium>
+                    </ContentBePremium>
                 </ImageBackground>
             ) : (
                 <>

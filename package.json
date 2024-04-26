@@ -1,6 +1,6 @@
 {
   "name": "mobile",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -20,7 +20,7 @@
     "@types/react-native": "^0.72.5",
     "@types/styled-components": "^5.1.29",
     "axios": "^1.6.0",
-    "expo": "~49.0.15",
+    "expo": "^49.0.0",
     "expo-dev-client": "^2.4.11",
     "expo-localization": "^14.5.0",
     "expo-notifications": "~0.20.1",
