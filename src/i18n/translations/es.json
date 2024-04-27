@@ -75,5 +75,6 @@
     "choice_couple": "Elige la tarjeta",
     "not_premium": "Deja de ser premium",
     "label_not_premium": "Para cancelar el plan necesitas confirmar usando el botón a continuación.",
-    "cancel": "Cancelar plan premium"
+    "cancel": "Cancelar plan premium",
+    "premium": "Sea Premium"
 }

@@ -75,5 +75,6 @@
     "choice_couple": "Escolha a carta de",
     "not_premium": "Deixar de ser premium",
     "label_not_premium": "Para cancelar o plano você precisa confirmar no botão a baixo.",
-    "cancel": "Cancelar plano premium"
+    "cancel": "Cancelar plano premium",
+    "premium": "Seja Premium"
 }

@@ -75,5 +75,6 @@
     "choice_couple": "Choose the card",
     "not_premium": "Stop being premium",
     "label_not_premium": "To cancel the plan you need to confirm using the button below.",
-    "cancel": "Cancel premium plan"
+    "cancel": "Cancel premium plan",
+    "premium": "Be Premium"
 }

@@ -11,14 +11,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#FFDD59"
     },
-    "plugins": [
-      [
-        "@stripe/stripe-react-native",
-        {
-          "enableGooglePay": true
-        }
-      ]
-    ],
     "assetBundlePatterns": [
       "**/*"
     ],
