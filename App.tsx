@@ -3,7 +3,6 @@ import { StatusBar, PermissionsAndroid } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { NavigationContainer } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
-import inAppMessaging from '@react-native-firebase/in-app-messaging';
 
 import Routes from "./src/routes";
 import Available from "./src/pages/Available";
@@ -67,14 +66,6 @@ export default function App() {
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log('Message handled in the background!', remoteMessage)
     })
-  }, [])
-
-  async function bootstrap() {
-    await inAppMessaging().setMessagesDisplaySuppressed(true);
-  }
-
-  useEffect(() => {
-    bootstrap
   }, [])
 
   return (
