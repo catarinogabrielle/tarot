@@ -1,7 +1,9 @@
-import React, { useState, useContext, useEffect } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View, ImageBackground, Alert } from 'react-native';
+import React, { useState, useContext, useLayoutEffect } from "react";
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View, ImageBackground } from 'react-native';
 import { EvilIcons, AntDesign } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
+import { useRevenueCat } from '../../contexts/RevenueCatProvider';
+import { PurchasesPackage } from 'react-native-purchases';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import 'expo-dev-client';
 
@@ -245,6 +247,22 @@ export default function Couple({ navigation }) {
         )
     }
 
+    const { packages, purchasePackage, restorePermissions } = useRevenueCat();
+
+    // Add a restore button to the top bar
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <Button onPress={restorePermissions} title="Restore" color={'#EA3C4A'}></Button>
+            )
+        });
+    }, []);
+
+    const onPurchase = (pack: PurchasesPackage) => {
+        // Purchase the package
+        purchasePackage!(pack);
+    };
+
     return (
         <Container>
             {premium != true ? (
@@ -284,9 +302,14 @@ export default function Couple({ navigation }) {
                                     <TextValue2>{t('mensal')}</TextValue2>
                                 </ContentValue>
 
-                                <Button>
-                                    <TextButton>{t('premium')}</TextButton>
-                                </Button>
+                                {packages.map((pack) => (
+                                    <Button
+                                        key={pack.identifier}
+                                        onPress={() => onPurchase(pack)}
+                                    >
+                                        <TextButton>{t('premium')}</TextButton>
+                                    </Button>
+                                ))}
                             </View>
                         </ContentInfoPremium>
                     </ContentBePremium>
@@ -423,4 +446,32 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
     },
+
+    container: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        marginVertical: 6
+    },
+    button: {
+        padding: 12,
+        borderRadius: 4,
+        margin: 4,
+        flexDirection: 'row',
+        width: '100%',
+        backgroundColor: '#fff'
+    },
+    text: {
+        flexGrow: 1
+    },
+    desc: {
+        color: '#B6B7C0',
+        paddingVertical: 4
+    },
+    price: {
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderRadius: 4,
+        paddingHorizontal: 8,
+        borderColor: '#EA3C4A'
+    }
 })

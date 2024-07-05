@@ -8,6 +8,7 @@ import Routes from "./src/routes";
 import Available from "./src/pages/Available";
 
 import { AuthProvider } from './src/contexts/AuthContext';
+import { RevenueCatProvider } from './src/contexts/RevenueCatProvider';
 
 import Colors from "./constants/Colors";
 import { Api } from "./src/services/api";
@@ -69,15 +70,17 @@ export default function App() {
   }, [])
 
   return (
-    <NavigationContainer>
-      <AuthProvider>
-        <StatusBar backgroundColor={ColorTheme.Theme} barStyle="light-content" translucent={false} />
-        {available == true ? (
-          <Routes />
-        ) : (
-          <Available />
-        )}
-      </AuthProvider>
-    </NavigationContainer>
+    <RevenueCatProvider>
+      <NavigationContainer>
+        <AuthProvider>
+          <StatusBar backgroundColor={ColorTheme.Theme} barStyle="light-content" translucent={false} />
+          {available == true ? (
+            <Routes />
+          ) : (
+            <Available />
+          )}
+        </AuthProvider>
+      </NavigationContainer>
+    </RevenueCatProvider>
   )
 }

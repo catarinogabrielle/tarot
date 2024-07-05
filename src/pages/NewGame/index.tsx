@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Modal, View, Text, Pressable, TouchableOpacity } from 'react-native';
+import { ScrollView, StyleSheet, Modal, View, Text, Pressable, TouchableOpacity, Alert } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocales } from 'expo-localization';
 import { EvilIcons } from '@expo/vector-icons';
+import * as InAppPurchases from 'expo-in-app-purchases';
 
 import { AuthContext } from '../../contexts/AuthContext';
 
@@ -48,6 +49,65 @@ export default function NewGame({ navigation }) {
     const [games, setGames] = useState([])
     const [response, setResponse] = useState(false)
     const { premium } = useContext(AuthContext)
+
+    const handlePurchase = async (purchase: InAppPurchases.IAPItemDetails) => {
+        if (purchase.productId === '2astrosytarot24') {
+            await saveSubscriptionStatus(true);
+        }
+    };
+
+    const saveSubscriptionStatus = async (isSubscriber: boolean) => {
+        // Salve o status da assinatura no AsyncStorage ou em uma API externa
+        await AsyncStorage.setItem('isSubscriber', JSON.stringify(isSubscriber));
+    };
+
+    const checkSubscriptionStatus = async (): Promise<boolean> => {
+        try {
+            const { responseCode, results } = await InAppPurchases.getPurchaseHistoryAsync();
+            if (responseCode === InAppPurchases.IAPResponseCode.OK) {
+                // Verifique se há alguma assinatura ativa
+                const activeSubscription = results.some(purchase => purchase.productId === '2astrosytarot24' && !purchase.expirationDate || new Date(purchase.expirationDate) > new Date());
+                return activeSubscription;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            console.error('Erro ao verificar o status da assinatura:', error);
+            return false;
+        }
+    };
+
+    const [isSubscriber, setIsSubscriber] = useState<boolean>(false);
+
+    useEffect(() => {
+        const initializeIAP = async () => {
+            await InAppPurchases.connectAsync();
+
+            InAppPurchases.setPurchaseListener(({ responseCode, results }) => {
+                if (responseCode === InAppPurchases.IAPResponseCode.OK) {
+                    results.forEach(async (purchase) => {
+                        if (!purchase.acknowledged) {
+                            await handlePurchase(purchase);
+                            await InAppPurchases.finishTransactionAsync(purchase, true);
+                        }
+                    });
+                }
+            });
+
+            // Verificar o status da assinatura ao iniciar o aplicativo
+            const subscriptionStatus = await checkSubscriptionStatus();
+            setIsSubscriber(subscriptionStatus);
+        };
+
+        initializeIAP();
+
+        return () => {
+            InAppPurchases.disconnectAsync();
+        };
+    }, []);
+
+    console.log(isSubscriber)
+    console.log(premium)
 
     const handleStorage = async () => {
         if (premium == true) {

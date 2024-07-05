@@ -173,7 +173,6 @@ justify-content: center;
 
 export const ContentInfoPremium = styled.View`
 width: 85%;
-height: 78%;
 display: flex;
 background-color: ${ColorTheme.Branco};
 border-radius: 8px;
