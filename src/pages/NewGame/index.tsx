@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Modal, View, Text, Pressable, TouchableOpacity, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Modal, View, Text, Pressable, TouchableOpacity } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getLocales } from 'expo-localization';
 import { EvilIcons } from '@expo/vector-icons';
 import * as InAppPurchases from 'expo-in-app-purchases';
+import { Api } from '../../services/api';
 
 import { AuthContext } from '../../contexts/AuthContext';
 
@@ -66,7 +67,7 @@ export default function NewGame({ navigation }) {
             const { responseCode, results } = await InAppPurchases.getPurchaseHistoryAsync();
             if (responseCode === InAppPurchases.IAPResponseCode.OK) {
                 // Verifique se há alguma assinatura ativa
-                const activeSubscription = results.some(purchase => purchase.productId === '2astrosytarot24' && !purchase.expirationDate || new Date(purchase.expirationDate) > new Date());
+                const activeSubscription = results.some(purchase => purchase.productId === '2astrosytarot24' && (!purchase.expirationDate || new Date(purchase.expirationDate) > new Date()));
                 return activeSubscription;
             } else {
                 return false;
@@ -96,6 +97,9 @@ export default function NewGame({ navigation }) {
 
             // Verificar o status da assinatura ao iniciar o aplicativo
             const subscriptionStatus = await checkSubscriptionStatus();
+            if (subscriptionStatus == false) {
+                getUserId()
+            }
             setIsSubscriber(subscriptionStatus);
         };
 
@@ -106,8 +110,36 @@ export default function NewGame({ navigation }) {
         };
     }, []);
 
-    console.log(isSubscriber)
-    console.log(premium)
+    async function getUserId() {
+        const storageIMEI = await AsyncStorage.getItem('@IMEI')
+        let handleStorageIMEI = JSON.parse(storageIMEI || '{}')
+
+        try {
+            await Api.post('/api/index.php?request=users&action=return', {
+                IMEI: handleStorageIMEI
+            }).then(async response => {
+                handlePremiun(response)
+            }).catch((err) => {
+                console.log('erro', err)
+            })
+        } catch (err) {
+            console.log('erro', err)
+        }
+    }
+
+    async function handlePremiun(response) {
+        try {
+            await Api.post('/api/index.php?request=users&action=downgrade-premium', {
+                user_id: response.data.data.usuario_id
+            }).then(response => {
+                console.log(response.data)
+            }).catch((err) => {
+                console.log('erro', err)
+            })
+        } catch (err) {
+            console.log('erro', err)
+        }
+    }
 
     const handleStorage = async () => {
         if (premium == true) {
@@ -246,7 +278,6 @@ export default function NewGame({ navigation }) {
     const changeLanguage = async () => {
         const language = await AsyncStorage.getItem('@Language')
         let hasLanguageStorage = JSON.parse(language || '{}')
-        console.log(hasLanguageStorage)
 
         if (language !== null) {
             i18n.changeLanguage(hasLanguageStorage)

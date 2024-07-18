@@ -16,9 +16,8 @@ const resources = {
 
 i18next.use(initReactI18next).init({
     compatibilityJSON: 'v3',
-    debug: true,
+    debug: false,
     lng: 'pt_BR',
-    // idioma a ser usado se a tradução no idioma do usuário não estiver disponível
     fallbackLng: 'en_US',
     resources,
 })

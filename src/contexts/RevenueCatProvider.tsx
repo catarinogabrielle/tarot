@@ -105,7 +105,6 @@ export const RevenueCatProvider = ({ children }: any) => {
     }
 
 	async function handlePremiun(response) {
-		console.log(response)
 		try {
 			await Api.post('/api/index.php?request=users&action=upgrade-premium', {
 				user_id: response.data.data.usuario_id
