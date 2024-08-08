@@ -35,6 +35,7 @@ import {
 
 import { RewardedAd, RewardedAdEventType, AdEventType, RewardedAdReward, useInterstitialAd } from 'react-native-google-mobile-ads';
 import { useTranslation } from 'react-i18next';
+import { AxiosResponse } from 'axios';
 
 const adUnitIdInterstitial = '/92206805/app-astrosytarot/interstitial';
 const adUnitId = '/92206805/app-astrosytarot/rewards';
@@ -127,7 +128,7 @@ export default function NewGame({ navigation }) {
         }
     }
 
-    async function handlePremiun(response) {
+    async function handlePremiun(response: AxiosResponse<any, any>) {
         try {
             await Api.post('/api/index.php?request=users&action=downgrade-premium', {
                 user_id: response.data.data.usuario_id

@@ -1,6 +1,6 @@
 {
   "name": "mobile",
-  "version": "16.0.0",
+  "version": "20.0.0",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -30,6 +30,7 @@
     "i18next": "^23.7.16",
     "ll": "^1.2.0",
     "lottie-react-native": "^6.4.0",
+    "metro-config": "^0.80.9",
     "npm": "^10.5.0",
     "onesignal-expo-plugin": "^2.0.2",
     "react": "18.2.0",
