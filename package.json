@@ -1,6 +1,6 @@
 {
   "name": "mobile",
-  "version": "20.0.0",
+  "version": "21.0.0",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
