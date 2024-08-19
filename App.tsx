@@ -24,7 +24,7 @@ export default function App() {
 
     try {
       await Api.get(`/api/last-app-version.php`).then(response => {
-        if (installedVersion !== response.data.version) {
+        if (installedVersion < response.data.version) {
           setAvailable(false)
         } else {
           setAvailable(true)
