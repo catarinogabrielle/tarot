@@ -16,7 +16,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gabrielledcastro.mobile"
+      "bundleIdentifier": "com.ymonetize.mobile"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -26,7 +26,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.gabrielledcastro.mobile"
+      "package": "com.ymonetize.mobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -39,6 +39,6 @@
   },
   "react-native-google-mobile-ads": {
     "android_app_id": "ca-app-pub-9439106205587976~5196565946",
-    "ios_app_id": "ca-app-pub-xxxxxxxx~xxxxxxxx"
+    "ios_app_id": "ca-app-pub-9439106205587976~5196565946"
   }
 }
