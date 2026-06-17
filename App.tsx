@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { StatusBar, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { NavigationContainer } from '@react-navigation/native';
-import messaging from '@react-native-firebase/messaging';
 
 import Routes from "./src/routes";
 import Available from "./src/pages/Available";
@@ -41,36 +40,9 @@ export default function App() {
     }
   }
 
+  // Adicionado o [] no final para evitar loop infinito na API!
   useEffect(() => {
     checkAppVersion()
-  })
-
-  useEffect(() => {
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage.notification,
-      )
-    })
-
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          console.log(
-            'Notification caused app to open from quit state:',
-            remoteMessage.notification,
-          )
-        }
-      })
-
-    messaging().onMessage(async remoteMessage => {
-      console.log("notification on forground state.......", remoteMessage)
-    })
-
-    messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log('Message handled in the background!', remoteMessage)
-    })
   }, [])
 
   return (
