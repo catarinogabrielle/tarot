@@ -22,7 +22,6 @@
       }
     },
     "android": {
-      "googleServicesFile": "./google-services.json",
       "versionCode": 23,
       "permissions": [
         "com.android.vending.BILLING",
