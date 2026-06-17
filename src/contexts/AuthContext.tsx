@@ -136,7 +136,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
     }
 
-    const handleIMEI = async (IMEI_user) => {
+    const handleIMEI = async (IMEI_user: string) => {
         await AsyncStorage.setItem('@deviceFirst', JSON.stringify("true"))
         await AsyncStorage.removeItem("@deviceStorage")
         await AsyncStorage.removeItem("@deviceStorageDataResponse")

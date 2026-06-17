@@ -2,7 +2,7 @@
   "expo": {
     "name": "Astros y Tarot",
     "slug": "mobile",
-    "version": "21.0.0",
+    "version": "23.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,21 +12,28 @@
       "backgroundColor": "#FFDD59"
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ymonetize.mobile"
+      "bundleIdentifier": "com.ymonetize.mobile",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-      "versionCode": 22,
-      "permissions": ["com.android.vending.BILLING"],
+      "versionCode": 23,
+      "permissions": [
+        "com.android.vending.BILLING",
+        "com.android.vending.BILLING"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ymonetize.mobile"
+      "package": "com.ymonetize.mobile",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -35,10 +42,28 @@
       "eas": {
         "projectId": "74be9584-4021-4db2-b0ca-272a4f7fc86c"
       }
+    },
+    "plugins": [
+      [
+        "react-native-google-mobile-ads/app.plugin",
+        {
+          "androidAppId": "ca-app-pub-9439106205587976~5196565946",
+          "iosAppId": "ca-app-pub-9439106205587976~5196565946"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.8.22",
+            "compileSdkVersion": 34
+          }
+        }
+      ],
+      "expo-localization"
+    ],
+    "updates": {
+      "url": "https://u.expo.dev/74be9584-4021-4db2-b0ca-272a4f7fc86c"
     }
-  },
-  "react-native-google-mobile-ads": {
-    "android_app_id": "ca-app-pub-9439106205587976~5196565946",
-    "ios_app_id": "ca-app-pub-9439106205587976~5196565946"
   }
 }

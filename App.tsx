@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StatusBar, PermissionsAndroid } from 'react-native';
+import { StatusBar, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { NavigationContainer } from '@react-navigation/native';
 import messaging from '@react-native-firebase/messaging';
@@ -14,7 +14,11 @@ import Colors from "./constants/Colors";
 import { Api } from "./src/services/api";
 const ColorTheme = Colors['Theme'];
 
-PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+// Request notification permissions only on Android
+if (Platform.OS === 'android') {
+  const PermissionsAndroid = require('react-native').PermissionsAndroid;
+  PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+}
 
 export default function App() {
   const [available, setAvailable] = useState(true)

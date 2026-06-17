@@ -48,16 +48,32 @@ import { useInterstitialAd, GAMBannerAd, BannerAdSize } from 'react-native-googl
 const adUnitId = '/92206805/app-astrosytarot/interstitial';
 const adUnitIdBanner = '/92206805/app-astrosytarot/b1';
 
-export default function SpecificGame({ navigation }) {
+// --- INTERFACES ADICIONADAS ---
+interface CardType {
+    carta_id: string | number;
+    nome: string;
+    tipo: string;
+    descricao: string;
+    imagem_url: string;
+}
+
+interface UserResponseType {
+    data: {
+        usuario_id: string | number;
+    }
+}
+// -----------------------------
+
+export default function SpecificGame({ navigation }: { navigation: any }) {
     const [loading, setLoading] = useState(false)
     const [name, setName] = useState('')
     const [saveName, setSaveName] = useState(false)
-    const [cards, setCards] = useState([])
+    const [cards, setCards] = useState<CardType[]>([]) // Tipado aqui
     const [startGame, setStartGame] = useState(false)
-    const [idCard, setIdCard] = useState('')
+    const [idCard, setIdCard] = useState<string | number>('') // Tipado aqui
     const [alert, setAlert] = useState(false)
     const [question, setQuestion] = useState('')
-    const [questionResult, setQuestionResult] = useState([])
+    const [questionResult, setQuestionResult] = useState<any>([]) // Tipado para remover o 'never'
     const [saveQuestion, setSaveQuestion] = useState(false)
     const { premium } = useContext(AuthContext)
 
@@ -88,7 +104,7 @@ export default function SpecificGame({ navigation }) {
 
     let deviceId = DeviceInfo.getDeviceId()
 
-    async function getUserData(item) {
+    async function getUserData(item: string | number) { // Parâmetro tipado
         const storageIMEI = await AsyncStorage.getItem('@IMEI')
         let handleStorageIMEI = JSON.parse(storageIMEI || '{}')
 
@@ -106,7 +122,7 @@ export default function SpecificGame({ navigation }) {
         }
     }
 
-    async function handleQuestion(USER_ID, item) {
+    async function handleQuestion(USER_ID: UserResponseType, item: string | number) { // Parâmetros tipados
         const id = USER_ID.data.usuario_id
 
         try {
@@ -227,7 +243,7 @@ export default function SpecificGame({ navigation }) {
 
                         <ScrollView style={styles.scroll}>
                             <ContentLaters>
-                                {cards.map(item => (
+                                {cards.map((item: CardType) => ( // Tipando o item do map
                                     <TouchableOpacity onPress={() => {
                                         setIdCard(item.carta_id)
                                         getUserData(item.carta_id)
@@ -283,7 +299,7 @@ export default function SpecificGame({ navigation }) {
                             </ContentLoading>
                         ) : (
                             <>
-                                {cards.map(item => {
+                                {cards.map((item: CardType) => { // Tipando o item do map
                                     if (item.carta_id === idCard)
                                         return (
                                             <ScrollView key={item.carta_id} style={styles.scroll}>
@@ -343,7 +359,7 @@ export default function SpecificGame({ navigation }) {
                                     )}
                                     <Input
                                         value={name}
-                                        onChangeText={(text: React.SetStateAction<string>) => setName(text)}
+                                        onChangeText={(text: React.SetStateAction<string>) => setName(text as unknown as string)}
                                         placeholderTextColor={ColorTheme.Cinza_escuro}
                                         placeholder={t('name')}
                                     />
@@ -367,7 +383,7 @@ export default function SpecificGame({ navigation }) {
                                             )}
                                             <Input
                                                 value={question}
-                                                onChangeText={(text: React.SetStateAction<string>) => setQuestion(text)}
+                                                onChangeText={(text: React.SetStateAction<string>) => setQuestion(text as unknown as string)}
                                                 placeholderTextColor={ColorTheme.Cinza_escuro}
                                                 placeholder={t('type_your_question')}
                                             />

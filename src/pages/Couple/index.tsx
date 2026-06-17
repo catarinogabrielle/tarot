@@ -1,5 +1,5 @@
 import React, { useState, useContext, useLayoutEffect } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View, ImageBackground } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View, ImageBackground, Button as NativeButton } from 'react-native';
 import { EvilIcons, AntDesign } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
 import { useRevenueCat } from '../../contexts/RevenueCatProvider';
@@ -51,19 +51,35 @@ import {
     TextLetter
 } from './styles';
 
-export default function Couple({ navigation }) {
+// --- INTERFACES ---
+interface CardType {
+    carta_id: number;
+    nome: string;
+    tipo: string;
+    descricao: string;
+    imagem_url: string;
+}
+
+interface UserResponseType {
+    data: {
+        usuario_id: string | number;
+    }
+}
+// -----------------
+
+export default function Couple({ navigation }: { navigation: any }) {
     const { premium, handlePremiunState } = useContext(AuthContext)
     const [name1, setName1] = useState('')
     const [saveName1, setSaveName1] = useState(false)
     const [name2, setName2] = useState('')
     const [saveName2, setSaveName2] = useState(false)
     const [startGame, setStartGame] = useState(false)
-    const [cards, setCards] = useState([])
+    const [cards, setCards] = useState<CardType[]>([])
     const [loadin, setLoadin] = useState(false)
     const [idCard1, setIdCard1] = useState(0)
     const [loadingResponse, setLoadingResponse] = useState(false)
     const [gpt_response, setGpt_response] = useState('')
-    const [question, setQuestion] = useState([])
+    const [question, setQuestion] = useState<any>([])
 
     const { t, i18n } = useTranslation()
 
@@ -84,7 +100,7 @@ export default function Couple({ navigation }) {
         }
     }
 
-    async function getUserData(item) {
+    async function getUserData(item: number) {
         const storageIMEI = await AsyncStorage.getItem('@IMEI')
         let handleStorageIMEI = JSON.parse(storageIMEI || '{}')
 
@@ -102,7 +118,7 @@ export default function Couple({ navigation }) {
         }
     }
 
-    async function handleQuestion(USER_ID, item) {
+    async function handleQuestion(USER_ID: UserResponseType, item: number) {
         const id = USER_ID.data.usuario_id
 
         try {
@@ -148,7 +164,7 @@ export default function Couple({ navigation }) {
                         <TitleLabel>{t('label_choice')}</TitleLabel>
                         <ScrollView style={styles.scroll}>
                             <ContentLaters>
-                                {cards.map(item => (
+                                {cards.map((item: CardType) => (
                                     <TouchableOpacity onPress={() => {
                                         if (idCard1 === 0) {
                                             setIdCard1(item.carta_id)
@@ -253,7 +269,7 @@ export default function Couple({ navigation }) {
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
-                <Button onPress={restorePermissions} title="Restore" color={'#EA3C4A'}></Button>
+                <NativeButton onPress={restorePermissions} title="Restore" color={'#EA3C4A'}></NativeButton>
             )
         });
     }, []);
@@ -338,7 +354,7 @@ export default function Couple({ navigation }) {
 
                                         <ContentInput>
                                             <Input
-                                                onChangeText={(text: React.SetStateAction<string>) => setName1(text)}
+                                                onChangeText={(text: React.SetStateAction<string>) => setName1(text as unknown as string)}
                                                 placeholderTextColor={ColorTheme.Cinza_escuro}
                                                 placeholder={t('placeholder')}
                                             />
@@ -358,7 +374,7 @@ export default function Couple({ navigation }) {
 
                                                 <ContentInput>
                                                     <Input
-                                                        onChangeText={(text: React.SetStateAction<string>) => setName2(text)}
+                                                        onChangeText={(text: React.SetStateAction<string>) => setName2(text as unknown as string)}
                                                         placeholderTextColor={ColorTheme.Cinza_escuro}
                                                         placeholder={t('placeholder')}
                                                     />

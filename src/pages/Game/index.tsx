@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, View, PermissionsAndroid } from 'react-native';
+import { ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity, View, Platform } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LottieView from 'lottie-react-native';
 import { EvilIcons } from "@expo/vector-icons";
@@ -47,17 +47,37 @@ import {
     TextLetter,
 } from './styles';
 
-PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+// Request notification permissions only on Android
+if (Platform.OS === 'android') {
+    const PermissionsAndroid = require('react-native').PermissionsAndroid;
+    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+}
 
-export default function Game({ navigation }) {
+// --- INTERFACES (TIPAGENS) ---
+interface CardType {
+    carta_id: string | number;
+    nome: string;
+    tipo: string;
+    descricao: string;
+    imagem_url: string;
+}
+
+interface UserResponseType {
+    data: {
+        usuario_id: string | number;
+    }
+}
+// -----------------------------
+
+export default function Game({ navigation }: { navigation: any }) {
     const [name, setName] = useState('')
     const [saveName, setSaveName] = useState(false)
-    const [idCard, setIdCard] = useState('')
+    const [idCard, setIdCard] = useState<string | number>('')
     const [alert, setAlert] = useState(false)
     const [startGame, setStartGame] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [cards, setCards] = useState([])
-    const [question, setQuestion] = useState([])
+    const [cards, setCards] = useState<CardType[]>([])
+    const [question, setQuestion] = useState<any>([])
     const [nome, setNome] = useState('')
     const [tipo, setTipo] = useState('')
     const [descricao, setDescricao] = useState('')
@@ -65,7 +85,7 @@ export default function Game({ navigation }) {
     const [gpt_response, setGpt_response] = useState('')
     const { premium } = useContext(AuthContext)
 
-    const handleDataResponse = (item) => {
+    const handleDataResponse = (item: CardType) => {
         setNome(item.nome)
         setTipo(item.tipo)
         setDescricao(item.descricao)
@@ -137,7 +157,7 @@ export default function Game({ navigation }) {
 
     let deviceId = DeviceInfo.getDeviceId()
 
-    async function getUserData(item) {
+    async function getUserData(item: string | number) {
         const storageIMEI = await AsyncStorage.getItem('@IMEI')
         let handleStorageIMEI = JSON.parse(storageIMEI || '{}')
 
@@ -155,7 +175,7 @@ export default function Game({ navigation }) {
         }
     }
 
-    async function handleQuestion(USER_ID, item) {
+    async function handleQuestion(USER_ID: UserResponseType, item: string | number) {
         const id = USER_ID.data.usuario_id
 
         try {
@@ -254,7 +274,7 @@ export default function Game({ navigation }) {
 
                         <ScrollView style={styles.scroll}>
                             <ContentLaters>
-                                {cards.map(item => (
+                                {cards.map((item: CardType) => (
                                     <TouchableOpacity onPress={() => {
                                         setIdCard(item.carta_id)
                                         getUserData(item.carta_id)
@@ -312,7 +332,7 @@ export default function Game({ navigation }) {
                             </ContentLoading>
                         ) : (
                             <>
-                                {cards.map(item => {
+                                {cards.map((item: CardType) => {
                                     if (item.carta_id === idCard)
                                         return (
                                             <ScrollView key={item.carta_id} style={styles.scroll}>
@@ -372,7 +392,7 @@ export default function Game({ navigation }) {
                                     )}
                                     <Input
                                         value={name}
-                                        onChangeText={(text: React.SetStateAction<string>) => setName(text)}
+                                        onChangeText={(text: React.SetStateAction<string>) => setName(text as unknown as string)}
                                         placeholderTextColor={ColorTheme.Cinza_escuro}
                                         placeholder={t('name')}
                                     />

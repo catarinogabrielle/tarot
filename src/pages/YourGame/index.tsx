@@ -50,10 +50,33 @@ import { useInterstitialAd } from 'react-native-google-mobile-ads';
 
 const adUnitId = '/92206805/app-astrosytarot/interstitial';
 
-export default function YourGame({ navigation }) {
+// --- INTERFACES ADICIONADAS ---
+interface CardType {
+    nome: string;
+    tipo: string;
+    descricao: string;
+    imagem_url: string;
+}
+
+interface GameType {
+    pergunta_id: string | number;
+    pergunta: string;
+    cartas: CardType[];
+    resposta: string;
+    data_pergunta: string;
+}
+
+interface UserResponseType {
+    data: {
+        usuario_id: string | number;
+    }
+}
+// -----------------------------
+
+export default function YourGame({ navigation }: { navigation: any }) {
     const [response, setResponse] = useState(false)
-    const [idCard, setIdCard] = useState('')
-    const [games, setGames] = useState([])
+    const [idCard, setIdCard] = useState<string | number>('')
+    const [games, setGames] = useState<GameType[]>([]) // Tipado aqui
     const [loadingBig, setLoadingBig] = useState(true)
     const [dataLen, setDataLen] = useState(true)
     const { premium } = useContext(AuthContext)
@@ -93,7 +116,7 @@ export default function YourGame({ navigation }) {
         }
     }
 
-    async function getGamesData(USER_ID) {
+    async function getGamesData(USER_ID: UserResponseType) { // Tipado aqui
         const id = USER_ID.data.usuario_id
 
         try {
@@ -160,7 +183,7 @@ export default function YourGame({ navigation }) {
     function handleGameLatters() {
         return (
             <ContainerResponse>
-                {games?.map(item => {
+                {games?.map((item: GameType) => { // Tipado o map
                     if (item?.pergunta_id === idCard)
                         return (
                             <ScrollView key={item.pergunta_id} style={styles.scroll}>
@@ -173,35 +196,35 @@ export default function YourGame({ navigation }) {
                                         <NameLetter style={{ fontWeight: 'bold', color: ColorTheme.Theme, textDecorationLine: 'underline' }}>{item.pergunta}</NameLetter>
                                     )}
 
-                                    {item?.cartas?.map(i => i?.nome).length == '1' ? (
+                                    {item?.cartas?.map((i: CardType) => i?.nome).length === 1 ? ( // Os itens da carta também tipados internamente!
                                         <>
-                                            <NameLetter style={{ fontWeight: 'bold' }}>{item?.cartas?.map(i => i?.nome)}</NameLetter>
-                                            <NameLetter>{item?.cartas?.map(i => i.tipo)}</NameLetter>
-                                            <DescriptionLetter>{item?.cartas?.map(i => i?.descricao)}</DescriptionLetter>
+                                            <NameLetter style={{ fontWeight: 'bold' }}>{item?.cartas?.map((i: CardType) => i?.nome)}</NameLetter>
+                                            <NameLetter>{item?.cartas?.map((i: CardType) => i.tipo)}</NameLetter>
+                                            <DescriptionLetter>{item?.cartas?.map((i: CardType) => i?.descricao)}</DescriptionLetter>
                                         </>
                                     ) : (
                                         <>
-                                            <NameLetter style={{ fontWeight: 'bold' }}>{item?.cartas?.map(i => i.nome)[0]}</NameLetter>
-                                            <NameLetter>{item?.cartas?.map(i => i.tipo)[0]}</NameLetter>
-                                            <DescriptionLetter style={{ fontSize: 15 }}>{item?.cartas?.map(i => i?.descricao)[0]}</DescriptionLetter>
+                                            <NameLetter style={{ fontWeight: 'bold' }}>{item?.cartas?.map((i: CardType) => i.nome)[0]}</NameLetter>
+                                            <NameLetter>{item?.cartas?.map((i: CardType) => i.tipo)[0]}</NameLetter>
+                                            <DescriptionLetter style={{ fontSize: 15 }}>{item?.cartas?.map((i: CardType) => i?.descricao)[0]}</DescriptionLetter>
 
-                                            <NameLetter style={{ fontWeight: 'bold', marginTop: 20 }}>{item?.cartas?.map(i => i.nome)[1]}</NameLetter>
-                                            <NameLetter>{item?.cartas?.map(i => i.tipo)[1]}</NameLetter>
-                                            <DescriptionLetter style={{ fontSize: 15 }}>{item?.cartas?.map(i => i?.descricao)[1]}</DescriptionLetter>
+                                            <NameLetter style={{ fontWeight: 'bold', marginTop: 20 }}>{item?.cartas?.map((i: CardType) => i.nome)[1]}</NameLetter>
+                                            <NameLetter>{item?.cartas?.map((i: CardType) => i.tipo)[1]}</NameLetter>
+                                            <DescriptionLetter style={{ fontSize: 15 }}>{item?.cartas?.map((i: CardType) => i?.descricao)[1]}</DescriptionLetter>
                                         </>
                                     )}
                                     <ContentTextResponse>
                                         <TextIn>{t('remember')}</TextIn>
                                     </ContentTextResponse>
 
-                                    {item?.cartas?.map(i => i?.imagem_url).length == '1' ? (
+                                    {item?.cartas?.map((i: CardType) => i?.imagem_url).length === 1 ? (
                                         <View style={styles.flex}>
-                                            <LetterResponse source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map(i => i?.imagem_url)}`) }} />
+                                            <LetterResponse source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map((i: CardType) => i?.imagem_url)}`) }} />
                                         </View>
                                     ) : (
                                         <View style={styles.flex2}>
-                                            <LetterResponse2 source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map(i => i?.imagem_url)[0]}`) }} />
-                                            <LetterResponse2 source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map(i => i?.imagem_url)[1]}`) }} />
+                                            <LetterResponse2 source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map((i: CardType) => i?.imagem_url)[0]}`) }} />
+                                            <LetterResponse2 source={{ uri: (`https://ymonetize.com/apps/app_tarot/assets/img/${item?.cartas?.map((i: CardType) => i?.imagem_url)[1]}`) }} />
                                         </View >
                                     )}
 
@@ -231,7 +254,7 @@ export default function YourGame({ navigation }) {
         )
     }
 
-    function toJSONLocal(date) {
+    function toJSONLocal(date: string | Date | number) { // Tipado aqui
         var local = new Date(date)
         return local.toString().replace(/\S+\s(\S+)\s(\d+)\s(\d+)\s.*/, '$2-$1-$3')
     }
@@ -248,14 +271,14 @@ export default function YourGame({ navigation }) {
                                 <>
                                     <TitleIn>{t('title_your_games')}</TitleIn>
 
-                                    {games?.map(item => (
+                                    {games?.map((item: GameType) => (
                                         <ContentCard key={item?.pergunta_id} onPress={() => {
                                             setIdCard(item?.pergunta_id)
                                             setResponse(true)
                                         }}>
                                             <ImgIn source={require('../../assets/carta.png')} />
                                             <ContentInfo>
-                                                {item?.cartas?.map(i => i?.imagem_url).length == '1' ? (
+                                                {item?.cartas?.map((i: CardType) => i?.imagem_url).length === 1 ? (
                                                     <>
                                                         {item.pergunta == 'conselhododia' ? (
                                                             <TitleCard>{t('label_title_day')}</TitleCard>
@@ -268,7 +291,7 @@ export default function YourGame({ navigation }) {
                                                 )}
 
                                                 <TextCard>{t('data')} <Text style={styles.TextStrong}>{toJSONLocal(item?.data_pergunta)}</Text></TextCard>
-                                                <TextCard>{t('letter')}: {item?.cartas?.map(i => i?.nome)[0]} ; {item?.cartas?.map(i => i?.nome)[1]}</TextCard>
+                                                <TextCard>{t('letter')}: {item?.cartas?.map((i: CardType) => i?.nome)[0]} ; {item?.cartas?.map((i: CardType) => i?.nome)[1]}</TextCard>
                                             </ContentInfo>
                                         </ContentCard>
                                     ))}

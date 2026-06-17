@@ -28,7 +28,7 @@ import {
     ContentLoading,
 } from './styles';
 
-export default function Profile({ navigation }) {
+export default function Profile({ navigation }: { navigation: any }) {
     const { handleLogin, premium, handlePremiunState } = useContext(AuthContext)
 
     const [name, setName] = useState('')
